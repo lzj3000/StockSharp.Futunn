@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>StockSharp.Futunn</RootNamespace>
+    <AssemblyName>StockSharp.Futunn</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DocumentationFile></DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\StockSharp.Futununu.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Futununu_Test\**" />
+    <EmbeddedResource Remove="Futununu_Test\**" />
+    <None Remove="Futununu_Test\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="lib\win32-x86\FTAPIChannel.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FTAPI4Net">
+      <HintPath>..\..\..\..\..\..\Downloads\FTAPI-5.0.1310\FTAPI-5.0.1310\FTAPI4NET\Sample\bin\Debug\FTAPI4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.ProtocolBuffers">
+      <HintPath>lib\netcore2.1\Google.ProtocolBuffers.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.ProtocolBuffers.Serialization">
+      <HintPath>lib\netcore2.1\Google.ProtocolBuffers.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Messages">
+      <HintPath>lib\StockSharp.Messages.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Logging">
+      <HintPath>lib\StockSharp.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Ecng.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="StockSharp.Localization">
+      <HintPath>lib\StockSharp.Localization.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="lib\win32-x86\FTAPIChannel.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ecng.Common" Version="1.0.42" />
+    <PackageReference Include="Ecng.Serialization" Version="1.0.46" />
+    <PackageReference Include="Ecng.Localization" Version="1.0.46" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+  </ItemGroup>
+</Project>
