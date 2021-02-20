@@ -31,10 +31,10 @@ namespace StockSharp.Futunn
             this.AddMarketDataSupport();
             this.AddTransactionalSupport();
 
-            this.AddSupportedMarketDataType(Messages.DataType.Ticks);
-            this.AddSupportedMarketDataType(Messages.DataType.MarketDepth);
-            this.AddSupportedMarketDataType(Messages.DataType.Level1);
-            this.AddSupportedMarketDataType(Messages.DataType.OrderLog);
+            this.AddSupportedMarketDataType(DataType.Ticks);
+            this.AddSupportedMarketDataType(DataType.MarketDepth);
+            this.AddSupportedMarketDataType(DataType.Level1);
+            this.AddSupportedMarketDataType(DataType.OrderLog);
 
             this.AddSupportedResultMessage(MessageTypes.SecurityLookup);
             this.AddSupportedResultMessage(MessageTypes.PortfolioLookup);

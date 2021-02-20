@@ -29,7 +29,6 @@ namespace StockSharp.Futunn.Native
             this.SyncEvent = syncEvent;
         }
     }
-
     public class FutuAPI : FTSPI_Conn, FTSPI_Qot, FTSPI_Trd
     {
         protected object qotLock = new object();
@@ -41,6 +40,15 @@ namespace StockSharp.Futunn.Native
         protected Dictionary<uint, ReqInfo> qotReqInfoMap = new Dictionary<uint, ReqInfo>();
         protected Dictionary<uint, ReqInfo> trdReqInfoMap = new Dictionary<uint, ReqInfo>();
 
+        public event Action<Exception> Error;
+
+        protected void OnError(string msg) {
+            Error?.Invoke(new Exception(msg));
+        }
+        protected void OnError(Exception err)
+        {
+            Error?.Invoke(err);
+        }
         public FutuAPI(string ip, ushort port, string user, string pass) {
             OpendIP = ip;
             OpendPort = port;
@@ -71,7 +79,10 @@ namespace StockSharp.Futunn.Native
                         qotConnStatus = ConnStatus.READY;
                         Monitor.PulseAll(qotLock);
                     }
-
+                    else
+                    {
+                        OnError(desc);
+                    }
                 }
             }
 
@@ -83,6 +94,10 @@ namespace StockSharp.Futunn.Native
                     {
                         trdConnStatus = ConnStatus.READY;
                         Monitor.PulseAll(trdLock);
+                    }
+                    else
+                    {
+                        OnError(desc);
                     }
 
                 }
@@ -109,13 +124,13 @@ namespace StockSharp.Futunn.Native
             }
         }
 
-        public bool InitConnectQotSync(String ip, ushort port)
+        public bool InitConnectQotSync()
         {
             qot.SetConnCallback(this);
             qot.SetQotCallback(this);
             lock (qotLock)
             {
-                bool ret = qot.InitConnect(ip, port, false);
+                bool ret = qot.InitConnect(OpendIP, OpendPort, false);
                 if (!ret)
                     return false;
                 Monitor.Wait(qotLock);
@@ -123,13 +138,13 @@ namespace StockSharp.Futunn.Native
             }
         }
 
-        public bool InitConnectTrdSync(String ip, ushort port)
+        public bool InitConnectTrdSync()
         {
             trd.SetConnCallback(this);
             trd.SetTrdCallback(this);
             lock (trdLock)
             {
-                bool ret = trd.InitConnect(ip, port, false);
+                bool ret = trd.InitConnect(OpendIP, OpendPort, false);
                 if (!ret)
                     return false;
                 Monitor.Wait(trdLock);

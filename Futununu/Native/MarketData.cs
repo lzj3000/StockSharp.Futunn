@@ -14,14 +14,11 @@ namespace StockSharp.Futunn.Native
         public MarketData(string ip, ushort port) {
             OpendIP = ip;
             OpendPort = port;
-            bool ret = InitConnectQotSync(OpendIP, OpendPort);
-            if (ret)
-                Console.WriteLine("qot connected");
-            else
-            {
-                Console.WriteLine("fail to connect opend");
-            }
+            bool ret = InitConnectQotSync();
+            if (!ret)
+                OnError("fail to connect opend");
         }
+
         public List<SecurityStaticInfo> GetSecurityList(SecurityType[] securityTypes) {
             var market = QotMarket.QotMarket_CNSH_Security;
             List<SecurityStaticInfo> stockCodes = new List<SecurityStaticInfo>();
