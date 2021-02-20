@@ -14,6 +14,7 @@ namespace StockSharp.Futunn.Native
         public void OnInitConnect(FTAPI_Conn client, long errCode, string desc)
         {
             Console.WriteLine("InitConnected");
+            
             if (errCode == 0)
             {
                 Connected?.Invoke(true, desc);

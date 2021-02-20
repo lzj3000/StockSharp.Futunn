@@ -31,7 +31,7 @@ namespace StockSharp.Futunn.Native
                 QotGetStaticInfo.Response rsp = GetStaticInfoSync(c2s);
                 if (rsp.RetType != (int)Common.RetType.RetType_Succeed)
                 {
-                    Console.Error.Write("getStaticInfoSync fail: {0}\n", rsp.RetMsg);
+                    OnError(string.Format("getStaticInfoSync fail: {0}\n", rsp.RetMsg));
                     return stockCodes;
                 }
                 foreach (SecurityStaticInfo info in rsp.S2C.StaticInfoListList)
@@ -49,20 +49,19 @@ namespace StockSharp.Futunn.Native
             Response rsp = GetSecuritySnapshotSync(securities);
             if (rsp.RetType != (int)Common.RetType.RetType_Succeed)
             {
-                Console.Error.Write("getSecuritySnapshotSync err: retType={0} msg={1}\n", rsp.RetType, rsp.RetMsg);
+                OnError(string.Format("getSecuritySnapshotSync err: retType={0} msg={1}\n", rsp.RetType, rsp.RetMsg));
             }
             else
             {
-                foreach (QotGetSecuritySnapshot.Snapshot snapshot in rsp.S2C.SnapshotListList)
+                foreach (Snapshot snapshot in rsp.S2C.SnapshotListList)
                 {
                     snapshots.Add(snapshot);
-
                 }
             }
             return snapshots;
         }
 
-        public void SubSecurityAllInfo(string[] securities)
+        public void SubAllInfo(string[] securities,bool isSub)
         {
             List<Security> secArr = new List<Security>();
             foreach (var code in securities) {
@@ -76,27 +75,77 @@ namespace StockSharp.Futunn.Native
                     SubType.SubType_RT,
                     SubType.SubType_KL_Day,
             };
-            QotSub.Response subRsp = SubSync(secArr, subTypes, true, true);
+            QotSub.Response subRsp = SubSync(secArr, subTypes, isSub, true);
             if (subRsp.RetType != (int)Common.RetType.RetType_Succeed)
             {
-                Console.Error.Write("subSync err; retType={0} msg={1}\n", subRsp.RetType, subRsp.RetMsg);
+                OnError(string.Format("subSync err; retType={0} msg={1}\n", subRsp.RetType, subRsp.RetMsg));
             }
         }
-        public void SubscribeOrderBook(string securityCode) {
-          
-        }
+        public event Action<QotUpdateBasicQot.Response> BasicQotCallback;
+        public event Action<QotUpdateOrderBook.Response> OrderBookCallback;
+        public event Action<QotUpdateKL.Response> KLCallback;
+        public event Action<QotUpdateRT.Response> RTCallback;
+        public event Action<QotUpdateTicker.Response> TickerCallback;
+        public event Action<QotUpdateBroker.Response> BrokerCallback;
+        /// <summary>
+        /// 实时报价回调
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="nSerialNo"></param>
+        /// <param name="rsp"></param>
         public override void OnReply_UpdateBasicQot(FTAPI_Conn client, uint nSerialNo, QotUpdateBasicQot.Response rsp)
         {
-           
+            BasicQotCallback?.Invoke(rsp);
         }
-        public override void OnReply_UpdateBroker(FTAPI_Conn client, uint nSerialNo, QotUpdateBroker.Response rsp)
-        {
-           
-        }
+        /// <summary>
+        /// 实时摆盘回调
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="nSerialNo"></param>
+        /// <param name="rsp"></param>
         public override void OnReply_UpdateOrderBook(FTAPI_Conn client, uint nSerialNo, QotUpdateOrderBook.Response rsp)
         {
-            
+            OrderBookCallback?.Invoke(rsp);
         }
-
+        /// <summary>
+        /// 实时K线回调
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="nSerialNo"></param>
+        /// <param name="rsp"></param>
+        public override void OnReply_UpdateKL(FTAPI_Conn client, uint nSerialNo, QotUpdateKL.Response rsp)
+        {
+            KLCallback?.Invoke(rsp);
+        }
+        /// <summary>
+        /// 实时分时回调
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="nSerialNo"></param>
+        /// <param name="rsp"></param>
+        public override void OnReply_UpdateRT(FTAPI_Conn client, uint nSerialNo, QotUpdateRT.Response rsp)
+        {
+            RTCallback?.Invoke(rsp);
+        }
+        /// <summary>
+        /// 实时逐笔回调
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="nSerialNo"></param>
+        /// <param name="rsp"></param>
+        public override void OnReply_UpdateTicker(FTAPI_Conn client, uint nSerialNo, QotUpdateTicker.Response rsp)
+        {
+            TickerCallback?.Invoke(rsp);
+        }
+        /// <summary>
+        /// 实时经纪队列回调
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="nSerialNo"></param>
+        /// <param name="rsp"></param>
+        public override void OnReply_UpdateBroker(FTAPI_Conn client, uint nSerialNo, QotUpdateBroker.Response rsp)
+        {
+            BrokerCallback?.Invoke(rsp);
+        }
     }
 }

@@ -102,26 +102,30 @@ namespace StockSharp.Futunn
             return true;
         }
         FTAPI_Qot client;
+        MarketData market;
         private void onConnect()
         {
             if (OpendIP.IsEmpty())
                 throw new InvalidOperationException("OpendIP is Empty.");
             if (OpendPort == 0)
                 throw new InvalidOperationException("OpendPort is Empty.");
-            if (Login.IsEmpty())
-                throw new InvalidOperationException("Login is Empty.");
-            if (Password.IsEmpty())
-                throw new InvalidOperationException("Password is Empty.");
+            if (this.IsTransactional())
+            {
+                if (Login.IsEmpty())
+                    throw new InvalidOperationException("Login is Empty.");
+                if (Password.IsEmpty())
+                    throw new InvalidOperationException("Password is Empty.");
+            }
             client = new FTAPI_Qot();
             var conn = new ConnCallback();
             conn.Connected += Conn_Connected;
             conn.Disconnected += Conn_Disconnected;
             client.SetConnCallback(conn);
             client.InitConnect(OpendIP, OpendPort, false);
-           
         }
         private void onDisconnec()
         {
+            UnSubscribeMarketInfo();
             if (client != null)
                 client.Close();
         }
@@ -130,11 +134,15 @@ namespace StockSharp.Futunn
         {
             SendOutDisconnectMessage(true);
         }
-
         private void Conn_Connected(bool arg1, string arg2)
         {
             if (arg1)
+            {
+                if (market == null)
+                    market = new MarketData(OpendIP, OpendPort);
+                SubscribeMarketInfo();
                 SendOutMessage(new ConnectMessage());
+            }
             else
                 SendOutError(arg2);
         }
