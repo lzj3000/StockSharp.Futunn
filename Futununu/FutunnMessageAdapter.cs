@@ -6,13 +6,13 @@ using System;
 
 namespace StockSharp.Futunn
 {
-   
+
     /// <summary>
     /// Futu证券消息适配器,用于交易中国市场股票
     /// </summary>
     /// <include file='FTAPIChannel.dll' path='[@name=""]'/>
     /// <remarks></remarks>
-   
+    [OrderCondition(typeof(FutunnOrderCondition))]
     public partial class FutunnMessageAdapter : MessageAdapter
     {
       
@@ -103,6 +103,7 @@ namespace StockSharp.Futunn
         }
         FTAPI_Qot client;
         MarketData market;
+        Transaction transaction;
         private void onConnect()
         {
             if (OpendIP.IsEmpty())
@@ -126,6 +127,16 @@ namespace StockSharp.Futunn
         private void onDisconnec()
         {
             UnSubscribeMarketInfo();
+            if (market != null)
+            {
+                market.Error -= On_Error;
+                market = null;
+            }
+            if (transaction != null) {
+                transaction.Error -= On_Error;
+                transaction = null;
+            }
+
             if (client != null)
                 client.Close();
         }
@@ -139,12 +150,27 @@ namespace StockSharp.Futunn
             if (arg1)
             {
                 if (market == null)
+                {
                     market = new MarketData(OpendIP, OpendPort);
+                    market.Error += On_Error;
+                }
+                if (transaction == null)
+                {
+                    transaction = new Transaction(OpendIP, OpendPort, Login, Password.ToString());
+                    transaction.Error += On_Error;
+                }
                 SubscribeMarketInfo();
                 SendOutMessage(new ConnectMessage());
             }
             else
                 SendOutError(arg2);
         }
+
+        private void On_Error(Exception obj)
+        {
+            SendOutError(obj.Message);
+        }
+
+      
     }
 }

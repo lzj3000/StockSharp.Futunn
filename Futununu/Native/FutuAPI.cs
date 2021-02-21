@@ -52,16 +52,16 @@ namespace StockSharp.Futunn.Native
         public FutuAPI(string ip, ushort port, string user, string pass) {
             OpendIP = ip;
             OpendPort = port;
-            UserID = user;
+            UserID = Convert.ToUInt64(user);
             Password = CalcMD5(pass);
         }
         public FutuAPI() { }
         public string OpendIP { get; protected set; }
         public ushort OpendPort { get; protected set; }
 
-        public string UserID { get; protected set; }
+        public ulong UserID { get; protected set; }
         public string Password { get; protected set; }
-        string CalcMD5(string input)
+        protected string CalcMD5(string input)
         {
             MD5 md5 = MD5.Create();
             byte[] encryptionBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(input));

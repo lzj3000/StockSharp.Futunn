@@ -54,7 +54,7 @@ namespace StockSharp.Futunn
 			market.TickerCallback -= Market_TickerCallback;
 		}
 
-	
+	    
         private void Market_TickerCallback(Futu.OpenApi.Pb.QotUpdateTicker.Response obj)
         {
 			foreach (var ticker in obj.S2C.TickerListList)
@@ -65,7 +65,7 @@ namespace StockSharp.Futunn
 					SecurityId = new SecurityId() { SecurityCode = obj.S2C.Security.Code },
 					TradeId = ticker.Sequence,
 					TradePrice = (decimal)ticker.Price,
-					TradeVolume = (decimal)ticker.Volume,
+					TradeVolume = ticker.Volume,
 					ServerTime = Convert.ToDateTime(ticker.Time),
 					OriginSide = ticker.Dir==2?Sides.Buy:Sides.Sell,
 				});
@@ -74,7 +74,14 @@ namespace StockSharp.Futunn
 
         private void Market_RTCallback(Futu.OpenApi.Pb.QotUpdateRT.Response obj)
         {
-            throw new NotImplementedException();
+			var code=obj.S2C.Security.Code;
+			foreach (var rt in obj.S2C.RtListList) {
+				SendOutMessage(new TimeFrameCandleMessage()
+				{
+					TimeFrame = TimeSpan.Parse(rt.Timestamp.ToString()),
+					
+				});
+			}
         }
 
 		private void Market_KLCallback(Futu.OpenApi.Pb.QotUpdateKL.Response obj)

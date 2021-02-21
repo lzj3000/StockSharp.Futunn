@@ -81,6 +81,10 @@ namespace StockSharp.Futunn.Native
                 OnError(string.Format("subSync err; retType={0} msg={1}\n", subRsp.RetType, subRsp.RetMsg));
             }
         }
+        public QotGetOrderBook.Response GetOrderBook(string securityCode)
+        {
+            return GetOrderBookSync(MakeSec(QotCommon.QotMarket.QotMarket_CNSH_Security, securityCode), 1);
+        }
         public event Action<QotUpdateBasicQot.Response> BasicQotCallback;
         public event Action<QotUpdateOrderBook.Response> OrderBookCallback;
         public event Action<QotUpdateKL.Response> KLCallback;
