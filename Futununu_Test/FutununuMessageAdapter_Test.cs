@@ -76,7 +76,7 @@ namespace Futununu_Test
         {
             if (obj is SecurityMessage) {
                 if (security == null)
-                    security = obj;
+                    security = obj as SecurityMessage;
             }
             Console.WriteLine(obj.ToString());
         }
