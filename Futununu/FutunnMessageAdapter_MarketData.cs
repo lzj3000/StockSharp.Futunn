@@ -129,7 +129,7 @@ namespace StockSharp.Futunn
 				Bids = obj.S2C.OrderBookBidListList.Select(e => new QuoteChange(Convert.ToDecimal(e.Price), e.Volume, e.OrederCount)).ToArray(),
 				Asks = obj.S2C.OrderBookAskListList.Select(e => new QuoteChange(Convert.ToDecimal(e.Price), e.Volume, e.OrederCount)).ToArray(),
 				ServerTime = Convert.ToDateTime(obj.S2C.SvrRecvTimeAskTimestamp)
-			}); ;
+			}); 
 		}
 
         private void ProcessSecurityLookup(SecurityLookupMessage lookupMsg)
@@ -137,11 +137,11 @@ namespace StockSharp.Futunn
 			var secTypes = lookupMsg.GetSecurityTypes();
 			List<SecurityType> securityTypeList = new List<SecurityType>();
 			foreach (var sectype in secTypes) {
-				securityTypeList.Add(sectype.Conver());
+				securityTypeList.Add(sectype.Convert());
 			}
 			var securities = market.GetSecurityList(securityTypeList.ToArray());
 			foreach(var sec in securities) {
-				var secMsg = sec.Conver();
+				var secMsg = sec.Convert();
 				secMsg.OriginalTransactionId = lookupMsg.TransactionId;
 				if (!secMsg.IsMatch(lookupMsg, secTypes))
 					continue;

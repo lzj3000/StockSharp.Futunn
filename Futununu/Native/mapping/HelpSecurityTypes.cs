@@ -8,10 +8,10 @@ namespace StockSharp.Futunn.Native.mapping
 {
     public static class HelpSecurityTypes
     {
-        public static SecurityType Conver(this SecurityTypes securityTypes) {
+        public static SecurityType Convert(this SecurityTypes securityTypes) {
             return outConv(securityTypes);
         }
-        public static SecurityTypes Conver(this SecurityType securityType) {
+        public static SecurityTypes Convert(this SecurityType securityType) {
             return inConv(securityType);
         }
 

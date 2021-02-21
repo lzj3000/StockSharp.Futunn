@@ -8,12 +8,12 @@ namespace StockSharp.Futunn.Native.mapping
 {
    public static class HelpSecurityMessage
     {
-        public static SecurityMessage Conver(this SecurityStaticInfo info)
+        public static SecurityMessage Convert(this SecurityStaticInfo info)
         {
             return new SecurityMessage()
             {
                 SecurityId =new SecurityId() { SecurityCode=info.Basic.Security.Code},
-                SecurityType = ((SecurityType)info.Basic.SecType).Conver(),
+                SecurityType = ((SecurityType)info.Basic.SecType).Convert(),
                 Name = info.Basic.Name,
                 MinVolume=info.Basic.LotSize,
                 VolumeStep = info.Basic.LotSize

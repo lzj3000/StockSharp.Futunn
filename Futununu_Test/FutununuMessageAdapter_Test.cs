@@ -16,7 +16,6 @@ namespace Futununu_Test
         FutunnMessageAdapter adapter;
         public FutununuMessageAdapter_Test()
         {
-            
             adapter = new FutunnMessageAdapter(new IncrementalIdGenerator());
             adapter.OpendIP = "127.0.0.1";
             adapter.OpendPort = 11111;
@@ -39,18 +38,23 @@ namespace Futununu_Test
         {
 
             Console.WriteLine("Test SecurityLookup");
-            var mes = new SecurityLookupMessage();
-            mes.SecurityTypes = new SecurityTypes[] {
-                SecurityTypes.Stock,
-                SecurityTypes.Index
+            var meg = new SecurityLookupMessage();
+            meg.SecurityTypes = new SecurityTypes[] {
+                SecurityTypes.Stock
             };
-            adapter.SendInMessage(mes);
+            adapter.SendInMessage(meg);
             Thread.Sleep(200);
         }
         [TestMethod]
         public void MarketData_Test()
         {
-
+            Console.WriteLine("Test MarketData");
+            var msg = new MarketDataMessage();
+            msg.IsSubscribe = true;
+            msg.SecurityId = security.SecurityId;
+            msg.DataType2 = DataType.MarketDepth;
+            adapter.SendInMessage(msg);
+            Thread.Sleep(200);
         }
         [TestMethod]
         public void OrderRegister_Test()
@@ -67,9 +71,13 @@ namespace Futununu_Test
         {
 
         }
-
+        SecurityMessage security;
         private void Adapter_NewOutMessage(Message obj)
         {
+            if (obj is SecurityMessage) {
+                if (security == null)
+                    security = obj;
+            }
             Console.WriteLine(obj.ToString());
         }
     }

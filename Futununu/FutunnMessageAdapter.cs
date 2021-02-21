@@ -34,7 +34,6 @@ namespace StockSharp.Futunn
             this.AddSupportedMarketDataType(DataType.Ticks);
             this.AddSupportedMarketDataType(DataType.MarketDepth);
             this.AddSupportedMarketDataType(DataType.Level1);
-            this.AddSupportedMarketDataType(DataType.OrderLog);
 
             this.AddSupportedResultMessage(MessageTypes.SecurityLookup);
             this.AddSupportedResultMessage(MessageTypes.PortfolioLookup);
