@@ -4,7 +4,7 @@
 
 这个项目是为StockSharp开发的富途牛牛连接器。
 
-[](https://github.com/StockSharp/StockSharp/blob/master/Media/Designer500.gif)
+![](https://github.com/StockSharp/StockSharp/blob/master/Media/Designer500.gif)
 
 </div>
 
