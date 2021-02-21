@@ -4,8 +4,9 @@
 
 这个项目是为StockSharp开发的富途牛牛连接器。
 
-![](https://github.com/StockSharp/StockSharp/blob/master/Media/Designer500.gif)
-</dir>
+[](https://github.com/StockSharp/StockSharp/blob/master/Media/Designer500.gif)
+
+</div>
 
 ## StockSharp介绍
  -是个自动交易程序可以在任何市场(美国，欧洲，亚洲，俄罗斯，股票，期货，期权，比特币，外汇等)交易。能够进行手动或自动交易(算法交易机器人，常规或高频交易)。本项目加上了中国股票市场的支持
