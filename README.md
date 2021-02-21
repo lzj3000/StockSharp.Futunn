@@ -22,9 +22,9 @@
 - :账户: 进行中
 
 
-## 参与贡献
+## 参与
 
-非常欢迎你的贡献，你可以通过以下方式加入一起共建
+非常欢迎你的参与，可以通过以下方式加入一起共建
 
-- 通过 [QQ群](<a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=w31kL1Zr507TPT5pAe7Ql-9GIKHBURcm&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="StockSharp中文" title="StockSharp中文"></a>) 加入讨论。
-- 通过 [Telegram](https://t.me/stocksharp_china) 加入讨论。
+- 通过 [QQ群 StockSharp中文](https://qm.qq.com/cgi-bin/qm/qr?k=w31kL1Zr507TPT5pAe7Ql-9GIKHBURcm&jump_from=webapi) 加入讨论。
+- 通过 [Telegram StockSharp中文](https://t.me/stocksharp_china) 加入讨论。
