@@ -6,7 +6,7 @@ using System;
 
 namespace StockSharp.Futunn
 {
-
+   
     /// <summary>
     /// Futu证券消息适配器,用于交易中国市场股票
     /// </summary>
@@ -144,25 +144,28 @@ namespace StockSharp.Futunn
         {
             SendOutDisconnectMessage(true);
         }
-        private void Conn_Connected(bool arg1, string arg2)
+
+        private void Conn_Connected(bool iscoon, string errMsg)
         {
-            if (arg1)
+            if (iscoon)
             {
                 if (market == null)
                 {
-                    market = new MarketData(OpendIP, OpendPort);
+                    market = new MarketData(OpendIP, OpendPort,(int)StockMarket);
                     market.Error += On_Error;
+                    SubscribeMarketInfo();
                 }
                 if (transaction == null)
                 {
-                    transaction = new Transaction(OpendIP, OpendPort, Login, Password.ToString());
+                    transaction = new Transaction(OpendIP, OpendPort, Login, Password.ToString(), (int)StockMarket + 10);
                     transaction.Error += On_Error;
+                    SubscribeTransactionInfo();
                 }
-                SubscribeMarketInfo();
+               
                 SendOutMessage(new ConnectMessage());
             }
             else
-                SendOutError(arg2);
+                SendOutError(errMsg);
         }
 
         private void On_Error(Exception obj)

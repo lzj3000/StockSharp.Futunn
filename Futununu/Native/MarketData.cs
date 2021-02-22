@@ -11,21 +11,22 @@ namespace StockSharp.Futunn.Native
 {
     public class MarketData: FutuAPI
     {
-        public MarketData(string ip, ushort port) {
+        public MarketData(string ip, ushort port,int market)
+        {
             OpendIP = ip;
             OpendPort = port;
+            MarketId = market;
             bool ret = InitConnectQotSync();
             if (!ret)
                 OnError("fail to connect opend");
         }
 
         public List<SecurityStaticInfo> GetSecurityList(SecurityType[] securityTypes) {
-            var market = QotMarket.QotMarket_CNSH_Security;
             List<SecurityStaticInfo> stockCodes = new List<SecurityStaticInfo>();
             foreach (SecurityType stockType in securityTypes)
             {
                 QotGetStaticInfo.C2S c2s = QotGetStaticInfo.C2S.CreateBuilder()
-                        .SetMarket((int)market)
+                        .SetMarket(MarketId)
                         .SetSecType((int)stockType)
                         .Build();
                 QotGetStaticInfo.Response rsp = GetStaticInfoSync(c2s);
@@ -65,7 +66,7 @@ namespace StockSharp.Futunn.Native
         {
             List<Security> secArr = new List<Security>();
             foreach (var code in securities) {
-                secArr.Add(MakeSec(QotMarket.QotMarket_CNSH_Security, code));
+                secArr.Add(MakeSec(((QotMarket)MarketId), code));
             }
             List<SubType> subTypes = new List<SubType>() {
                     SubType.SubType_Basic,
@@ -83,7 +84,7 @@ namespace StockSharp.Futunn.Native
         }
         public QotGetOrderBook.Response GetOrderBook(string securityCode)
         {
-            return GetOrderBookSync(MakeSec(QotCommon.QotMarket.QotMarket_CNSH_Security, securityCode), 1);
+            return GetOrderBookSync(MakeSec(QotMarket.QotMarket_CNSH_Security, securityCode), 1);
         }
         public event Action<QotUpdateBasicQot.Response> BasicQotCallback;
         public event Action<QotUpdateOrderBook.Response> OrderBookCallback;

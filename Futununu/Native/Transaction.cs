@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Futu.OpenApi;
 using Futu.OpenApi.Pb;
 
@@ -6,12 +7,13 @@ namespace StockSharp.Futunn.Native
 {
     public class Transaction : FutuAPI
     {
-        public Transaction(string ip, ushort port, string userid, string password)
+        public Transaction(string ip, ushort port, string userid, string password, int market)
         {
             OpendIP = ip;
             OpendPort = port;
             UserID = Convert.ToUInt64(userid);
             Password = CalcMD5(password);
+            MarketId = market;
             bool ret = InitConnectTrdSync();
             if (!ret)
                 OnError("fail to connect opend");
@@ -22,7 +24,7 @@ namespace StockSharp.Futunn.Native
             return this.GetAccListSync(Convert.ToUInt64(UserID));
         }
 
-        public void OrderRegister(string code,double qty,double price,int trdSide,int isReal=0)
+        public void OrderRegister(string code, double qty, double price, int trdSide, int isReal = 0)
         {
             TrdUnlockTrade.Response unlockTradeRsp = UnlockTradeSync(Password, true);
             if (unlockTradeRsp.RetType != (int)Common.RetType.RetType_Succeed)
@@ -47,7 +49,7 @@ namespace StockSharp.Futunn.Native
                     .SetQty(qty)
                     .SetPrice(price)
                     .SetAdjustPrice(true)
-                    .SetSecMarket((int)TrdCommon.TrdSecMarket.TrdSecMarket_CN_SH)
+                    .SetSecMarket(MarketId)
                     .Build();
             TrdPlaceOrder.Response placeOrderRsp = PlaceOrderSync(c2s);
 
@@ -80,6 +82,40 @@ namespace StockSharp.Futunn.Native
         public override void OnReply_UpdateOrderFill(FTAPI_Conn client, uint nSerialNo, TrdUpdateOrderFill.Response rsp)
         {
             OrderTradeFill?.Invoke(rsp);
+        }
+        /// <summary>
+        /// 撤销订单（同步）
+        /// </summary>
+        /// <param name="orderId">订单ID</param>
+        /// <returns></returns>
+        public TrdModifyOrder.Request OrderCancelSync(ulong orderId)
+        {
+            ReqInfo reqInfo = null;
+            Object syncEvent = new Object();
+
+            lock (syncEvent)
+            {
+                lock (trdLock)
+                {
+                    TrdCommon.TrdHeader header = TrdCommon.TrdHeader.CreateBuilder()
+             .SetAccID(281756457888247915L)
+             .SetTrdEnv((int)TrdCommon.TrdEnv.TrdEnv_Simulate)
+             .SetTrdMarket((int)TrdCommon.TrdMarket.TrdMarket_CN)
+             .Build();
+                    TrdModifyOrder.C2S c2s = TrdModifyOrder.C2S.CreateBuilder()
+                            .SetPacketID(trd.NextPacketID())
+                            .SetHeader(header)
+                            .SetOrderID(orderId)
+                            .SetModifyOrderOp((int)TrdCommon.ModifyOrderOp.ModifyOrderOp_Cancel)
+                        .Build();
+                    TrdModifyOrder.Request req = TrdModifyOrder.Request.CreateBuilder().SetC2S(c2s).Build();
+                    var sn = trd.ModifyOrder(req);
+                    reqInfo = new ReqInfo(ProtoID.TrdModifyOrder, syncEvent);
+                    trdReqInfoMap.Add(sn, reqInfo);
+                }
+                Monitor.Wait(syncEvent);
+                return (TrdModifyOrder.Request)reqInfo.Rsp;
+            }
         }
     }
 }

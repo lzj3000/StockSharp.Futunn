@@ -58,6 +58,7 @@ namespace StockSharp.Futunn.Native
         public FutuAPI() { }
         public string OpendIP { get; protected set; }
         public ushort OpendPort { get; protected set; }
+        public int MarketId { get; protected set; }
 
         public ulong UserID { get; protected set; }
         public string Password { get; protected set; }

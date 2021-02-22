@@ -1,4 +1,6 @@
-﻿using StockSharp.Futunn.Native.mapping;
+﻿using Ecng.Common;
+using StockSharp.Futunn.Native.mapping;
+using StockSharp.Localization;
 using StockSharp.Messages;
 using System;
 using System.Collections.Generic;
@@ -18,9 +20,9 @@ namespace StockSharp.Futunn
 		private void Transaction_OrderStates(Futu.OpenApi.Pb.TrdUpdateOrder.Response obj)
 		{
 			var order = obj.S2C.Order;
-			if (orderList.ContainsKey(order.Code))
+			if (securityTradeList.ContainsKey(order.Code))
 			{
-				var reg = orderList[order.Code];
+				var reg = securityTradeList[order.Code];
 				var orderMsg = reg.ToExec();
 				orderMsg.OrderId = (long)order.OrderID;
 				orderMsg.OrderPrice = (decimal)order.Price;
@@ -34,10 +36,12 @@ namespace StockSharp.Futunn
 		}
 		private void Transaction_OrderTradeFill(Futu.OpenApi.Pb.TrdUpdateOrderFill.Response obj)
 		{
+			OrderStatusMessage osm = new OrderStatusMessage();
+			
 			var order = obj.S2C.OrderFill;
-			if (orderList.ContainsKey(order.Code)) {
-				orderList.Remove(order.Code);
-				var reg = orderList[order.Code];
+			if (securityTradeList.ContainsKey(order.Code)) {
+				securityTradeList.Remove(order.Code);
+				var reg = securityTradeList[order.Code];
 				var orderMsg = reg.ToExec();
 				orderMsg.OrderState = OrderStates.Done;
 				orderMsg.OrderId = (long)order.OrderID;
@@ -48,7 +52,8 @@ namespace StockSharp.Futunn
 				SendOutMessage(orderMsg);
 			}
 		}
-		private readonly Dictionary<string, OrderRegisterMessage> orderList = new Dictionary<string, OrderRegisterMessage>();
+		private readonly Dictionary<string, OrderRegisterMessage> securityTradeList = new Dictionary<string, OrderRegisterMessage>();
+		private readonly Dictionary<string, OrderStatusMessage> orderStatusList = new Dictionary<string, OrderStatusMessage>();
 		private void ProcessOrderRegister(OrderRegisterMessage regMsg)
 		{
 			var price = regMsg.Price;
@@ -62,9 +67,9 @@ namespace StockSharp.Futunn
 					price = (decimal)ob.S2C.GetOrderBookAskList(0).Price;
 				}
 			}
-			if (!orderList.ContainsKey(regMsg.SecurityId.SecurityCode))
+			if (!securityTradeList.ContainsKey(regMsg.SecurityId.SecurityCode))
 			{
-				orderList.Add(regMsg.SecurityId.SecurityCode, regMsg);
+				securityTradeList.Add(regMsg.SecurityId.SecurityCode, regMsg);
 				transaction.OrderRegister(regMsg.SecurityId.SecurityCode,
 					(double)regMsg.Volume,
 					(double)price,
@@ -75,9 +80,19 @@ namespace StockSharp.Futunn
 
 		private void ProcessOrderCancel(OrderCancelMessage cancelMsg)
 		{
+			if (cancelMsg.OrderId == null)
+				throw new InvalidOperationException(LocalizedStrings.Str2252Params.Put(cancelMsg.OriginalTransactionId));
+
+			var res = transaction.OrderCancelSync((ulong)cancelMsg.OrderId);
 			
+			ProcessOrderStatus(null);
 		}
 
+
+		private void ProcessOrderStatus(OrderStatusMessage message)
+		{
+		    
+		}
 		private void ProcessPortfolioLookup(PortfolioLookupMessage message)
 		{
 		}

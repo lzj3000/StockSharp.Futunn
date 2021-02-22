@@ -9,9 +9,19 @@ using System.Text;
 
 namespace StockSharp.Futunn
 {
-    public enum FutununVersions
+    /// <summary>
+    /// 国内股票市场
+    /// </summary>
+    public enum StockMarket
     {
-        V5 = 5
+        /// <summary>
+        /// 上海交易所
+        /// </summary>
+        ShangHai = 21,
+        /// <summary>
+        /// 深圳交易所
+        /// </summary>
+        ShenZhen = 22
     }
     [CategoryLoc("China")]
     [DescriptionLoc("Str1770", "Futununu")]
@@ -27,8 +37,13 @@ namespace StockSharp.Futunn
         /// <summary>
         /// 版本号
         /// </summary>
-        [Display(ResourceType = typeof(LocalizedStrings), Name = "Version", Description = "Str1860", GroupName = "General", Order = 0)]
-        public FutununVersions Version { get; set; }
+        //[Display(ResourceType = typeof(LocalizedStrings), Name = "版本", Description = "futu API 版本", GroupName = "General", Order = 0)]
+        //public FutununVersions Version { get; set; }
+        /// <summary>
+        /// 国内股票市场
+        /// </summary>
+        [Display(ResourceType = typeof(LocalizedStrings), Name = "股票市场", Description = "国内的股票市场选择", GroupName = "General", Order = 1)]
+        public StockMarket StockMarket { get; set; }
         /// <summary>
         /// 登录名
         /// </summary>
@@ -37,26 +52,28 @@ namespace StockSharp.Futunn
         /// <summary>
         /// 密码
         /// </summary>
-        [Display(ResourceType = typeof(LocalizedStrings), Name = "Password", Description = "Str2262", GroupName = "Str174", Order = 2)]
+        [Display(ResourceType = typeof(LocalizedStrings), Name = "密码", Description = "Str2262", GroupName = "Str174", Order = 2)]
         public SecureString Password { get; set; }
         /// <summary>
         /// OpendIP
         /// </summary>
-        [Display(ResourceType = typeof(LocalizedStrings), Name = "OpendIP", Description = "Str2262", GroupName = "Str174", Order = 3)]
+        [Display(ResourceType = typeof(LocalizedStrings), Name = "网关IP", Description = "Str2262", GroupName = "Str174", Order = 3)]
         public string OpendIP { get; set; }
         /// <summary>
         /// OpendPort
         /// </summary>
-        [Display(ResourceType = typeof(LocalizedStrings), Name = "OpendPort", Description = "Str2262", GroupName = "Str174", Order = 4)]
+        [Display(ResourceType = typeof(LocalizedStrings), Name = "网关端口", Description = "Str2262", GroupName = "Str174", Order = 4)]
         public ushort OpendPort { get; set; }
+
         [Display(ResourceType = typeof(LocalizedStrings), Name = "交易业务账户", Description = "交易业务账户是您的证券账户，需要完成相应券商的开户流程才能得到，主要用于出入金、融资融券、交易各类金融标的、直接持有资产和持仓。",
             GroupName = "Str174", Order = 5)]
         public ulong TrdAcc { get; set; }
 
+
         public override void Save(SettingsStorage storage)
         {
             base.Save(storage);
-
+            storage.SetValue(nameof(StockMarket), StockMarket);
             storage.SetValue(nameof(Login), Login);
             storage.SetValue(nameof(Password), Password);
             storage.SetValue(nameof(OpendIP), OpendIP);
@@ -68,7 +85,7 @@ namespace StockSharp.Futunn
         public override void Load(SettingsStorage storage)
         {
             base.Load(storage);
-
+            StockMarket= storage.GetValue<StockMarket>(nameof(StockMarket));
             Login = storage.GetValue<string>(nameof(Login));
             Password = storage.GetValue<SecureString>(nameof(Password));
             OpendIP = storage.GetValue<string>(nameof(OpendIP));
