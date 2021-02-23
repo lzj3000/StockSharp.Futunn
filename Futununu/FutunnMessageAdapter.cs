@@ -3,6 +3,7 @@ using Futu.OpenApi;
 using StockSharp.Futunn.Native;
 using StockSharp.Messages;
 using System;
+using System.Collections.Generic;
 
 namespace StockSharp.Futunn
 {
@@ -30,11 +31,16 @@ namespace StockSharp.Futunn
 
             this.AddMarketDataSupport();
             this.AddTransactionalSupport();
+            this.RemoveSupportedMessage(MessageTypes.OrderGroupCancel);
+            this.RemoveSupportedMessage(MessageTypes.OrderReplace);
+            this.RemoveSupportedMessage(MessageTypes.OrderPairReplace);
+            this.RemoveSupportedMessage(MessageTypes.Portfolio);
 
             this.AddSupportedMarketDataType(DataType.Ticks);
             this.AddSupportedMarketDataType(DataType.MarketDepth);
             this.AddSupportedMarketDataType(DataType.Level1);
 
+            this.AddSupportedResultMessage(MessageTypes.Security);
             this.AddSupportedResultMessage(MessageTypes.SecurityLookup);
             this.AddSupportedResultMessage(MessageTypes.PortfolioLookup);
             this.AddSupportedResultMessage(MessageTypes.OrderStatus);
@@ -62,6 +68,11 @@ namespace StockSharp.Futunn
                 case MessageTypes.MarketData:
                     {
                         ProcessMarketData((MarketDataMessage)message);
+                        break;
+                    }
+                case MessageTypes.Security:
+                    {
+                        ProcessSecurityLookup((SecurityLookupMessage)message);
                         break;
                     }
                 case MessageTypes.SecurityLookup:
@@ -101,7 +112,18 @@ namespace StockSharp.Futunn
             return true;
         }
         FTAPI_Qot client;
-        MarketData market;
+        MarketData _market;
+        MarketData market { 
+            get {
+                if (_market == null) {
+                    _market = new MarketData(OpendIP, OpendPort, (int)StockMarket);
+                }
+                return _market;
+            }
+            set {
+                _market = value;
+            }
+        }
         Transaction transaction;
         private void onConnect()
         {
@@ -157,7 +179,7 @@ namespace StockSharp.Futunn
                 }
                 if (transaction == null)
                 {
-                    transaction = new Transaction(OpendIP, OpendPort, Login, Password.ToString(), (int)StockMarket + 10);
+                    transaction = new Transaction(OpendIP, OpendPort, Login, Password.ToString(), (int)StockMarket);
                     transaction.Error += On_Error;
                     SubscribeTransactionInfo();
                 }
@@ -172,7 +194,6 @@ namespace StockSharp.Futunn
         {
             SendOutError(obj.Message);
         }
-
-      
+       
     }
 }

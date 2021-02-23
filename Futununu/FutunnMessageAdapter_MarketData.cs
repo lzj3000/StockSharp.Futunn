@@ -149,5 +149,17 @@ namespace StockSharp.Futunn
 			}
 			SendSubscriptionResult(lookupMsg);
 		}
+		public override TimeSpan GetHistoryStepSize(DataType dataType, out TimeSpan iterationInterval)
+		{
+			return base.GetHistoryStepSize(dataType, out iterationInterval);
+		}
+		protected override IEnumerable<TimeSpan> GetTimeFrames(SecurityId securityId, DateTimeOffset? from, DateTimeOffset? to)
+		{
+			return base.GetTimeFrames(securityId, from, to);
+		}
+		public override IEnumerable<object> GetCandleArgs(Type candleType, SecurityId securityId, DateTimeOffset? from, DateTimeOffset? to)
+		{
+			return base.GetCandleArgs(candleType, securityId, from, to);
+		}
 	}
 }

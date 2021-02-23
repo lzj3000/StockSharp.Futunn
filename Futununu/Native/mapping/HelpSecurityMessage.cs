@@ -16,7 +16,8 @@ namespace StockSharp.Futunn.Native.mapping
                 SecurityType = ((SecurityType)info.Basic.SecType).Convert(),
                 Name = info.Basic.Name,
                 MinVolume = info.Basic.LotSize,
-                VolumeStep = info.Basic.LotSize
+                VolumeStep = info.Basic.LotSize,
+                //BackMode= MessageBackModes.Direct,
             };
         }
     }

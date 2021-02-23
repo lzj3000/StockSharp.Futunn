@@ -16,12 +16,15 @@ namespace StockSharp.Futunn.Native
             OpendIP = ip;
             OpendPort = port;
             MarketId = market;
+           
+        }
+        private void connectSync() {
             bool ret = InitConnectQotSync();
             if (!ret)
                 OnError("fail to connect opend");
         }
-
         public List<SecurityStaticInfo> GetSecurityList(SecurityType[] securityTypes) {
+            connectSync();
             List<SecurityStaticInfo> stockCodes = new List<SecurityStaticInfo>();
             foreach (SecurityType stockType in securityTypes)
             {
@@ -45,7 +48,7 @@ namespace StockSharp.Futunn.Native
         }
        
         public List<Snapshot> GetSnapshots(Security[] securities) {
-
+            connectSync();
             List<Snapshot> snapshots = new List<Snapshot>();
             Response rsp = GetSecuritySnapshotSync(securities);
             if (rsp.RetType != (int)Common.RetType.RetType_Succeed)
@@ -61,16 +64,19 @@ namespace StockSharp.Futunn.Native
             }
             return snapshots;
         }
-
+        public void GetBasicQot() { 
+        
+           
+        }
         public void SubAllInfo(string[] securities,bool isSub)
         {
+            connectSync();
             List<Security> secArr = new List<Security>();
             foreach (var code in securities) {
                 secArr.Add(MakeSec(((QotMarket)MarketId), code));
             }
             List<SubType> subTypes = new List<SubType>() {
                     SubType.SubType_Basic,
-                    SubType.SubType_Broker,
                     SubType.SubType_OrderBook,
                     SubType.SubType_Ticker,
                     SubType.SubType_RT,
@@ -84,6 +90,7 @@ namespace StockSharp.Futunn.Native
         }
         public QotGetOrderBook.Response GetOrderBook(string securityCode)
         {
+            connectSync();
             return GetOrderBookSync(MakeSec(QotMarket.QotMarket_CNSH_Security, securityCode), 1);
         }
         public event Action<QotUpdateBasicQot.Response> BasicQotCallback;

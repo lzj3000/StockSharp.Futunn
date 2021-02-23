@@ -17,6 +17,7 @@ namespace Futununu_Test
         public FutununuMessageAdapter_Test()
         {
             adapter = new FutunnMessageAdapter(new IncrementalIdGenerator());
+            adapter.StockMarket = StockMarket.CNSH_Security;
             adapter.OpendIP = "127.0.0.1";
             adapter.OpendPort = 11111;
             adapter.Login = "123456";
@@ -25,6 +26,7 @@ namespace Futununu_Test
             foreach (var c in psc)
                 adapter.Password.AppendChar(c);
             adapter.NewOutMessage += Adapter_NewOutMessage;
+            
         }
         [TestMethod]
         public void Connect_Test()
@@ -51,10 +53,10 @@ namespace Futununu_Test
             Console.WriteLine("Test MarketData");
             var msg = new MarketDataMessage();
             msg.IsSubscribe = true;
-            msg.SecurityId = security.SecurityId;
+            msg.SecurityId =new SecurityId() { SecurityCode= "688185" };
             msg.DataType2 = DataType.MarketDepth;
             adapter.SendInMessage(msg);
-            Thread.Sleep(200);
+            Thread.Sleep(3000);
         }
         [TestMethod]
         public void OrderRegister_Test()
@@ -74,6 +76,7 @@ namespace Futununu_Test
         SecurityMessage security;
         private void Adapter_NewOutMessage(Message obj)
         {
+            Console.WriteLine(obj.IsBack());
             if (obj is SecurityMessage) {
                 if (security == null)
                     security = obj as SecurityMessage;

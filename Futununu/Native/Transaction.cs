@@ -18,7 +18,24 @@ namespace StockSharp.Futunn.Native
             if (!ret)
                 OnError("fail to connect opend");
         }
-
+        protected int GetTrdMarket() {
+            if (MarketId == 1)
+                return 1;
+            if (MarketId == 11)
+                return 2;
+            if (MarketId == 21||MarketId==22)
+                return 3;
+            return 0;
+        }
+        protected int GetTrdSecMarket() {
+            if (MarketId == 1)
+                return 1;
+            if (MarketId == 11)
+                return 2;
+            if (MarketId == 21 || MarketId == 22)
+                return MarketId + 10;
+            return 0;
+        }
         public TrdGetAccList.Response GetAccList()
         {
             return this.GetAccListSync(Convert.ToUInt64(UserID));
@@ -38,7 +55,7 @@ namespace StockSharp.Futunn.Native
             TrdCommon.TrdHeader header = TrdCommon.TrdHeader.CreateBuilder()
                       .SetTrdEnv(isReal)
                       .SetAccID(accID)
-                      .SetTrdMarket((int)TrdCommon.TrdMarket.TrdMarket_CN)
+                      .SetTrdMarket(GetTrdMarket())
                       .Build();
             TrdPlaceOrder.C2S c2s = TrdPlaceOrder.C2S.CreateBuilder()
                     .SetPacketID(trd.NextPacketID())
@@ -49,7 +66,7 @@ namespace StockSharp.Futunn.Native
                     .SetQty(qty)
                     .SetPrice(price)
                     .SetAdjustPrice(true)
-                    .SetSecMarket(MarketId)
+                    .SetSecMarket(GetTrdSecMarket())
                     .Build();
             TrdPlaceOrder.Response placeOrderRsp = PlaceOrderSync(c2s);
 
@@ -57,7 +74,7 @@ namespace StockSharp.Futunn.Native
                       .AddCodeList(code)
                       .Build();
             TrdGetOrderFillList.Response getOrderFillListRsp = GetOrderFillListSync(accID,
-                    TrdCommon.TrdMarket.TrdMarket_CN,
+                    ((TrdCommon.TrdMarket)GetTrdMarket()),
                     (TrdCommon.TrdEnv)isReal, false, filterConditions);
         }
         public event Action<TrdUpdateOrder.Response> OrderStates;
@@ -100,7 +117,7 @@ namespace StockSharp.Futunn.Native
                     TrdCommon.TrdHeader header = TrdCommon.TrdHeader.CreateBuilder()
              .SetAccID(281756457888247915L)
              .SetTrdEnv((int)TrdCommon.TrdEnv.TrdEnv_Simulate)
-             .SetTrdMarket((int)TrdCommon.TrdMarket.TrdMarket_CN)
+             .SetTrdMarket(GetTrdMarket())
              .Build();
                     TrdModifyOrder.C2S c2s = TrdModifyOrder.C2S.CreateBuilder()
                             .SetPacketID(trd.NextPacketID())
