@@ -17,17 +17,12 @@
     <Compile Remove="Futununu_Test\**" />
     <EmbeddedResource Remove="Futununu_Test\**" />
     <None Remove="Futununu_Test\**" />
+    <None Remove="logos\futunn.png" />
+    <None Remove="logos\futunn_logo.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="component\logos\futunn.png" />
     <None Remove="lib\win32-x86\FTAPIChannel.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="component\logos\futunn.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -52,14 +47,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="component\logos\futunn.png" />
     <Resource Include="lib\win32-x86\FTAPIChannel.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="logos\futunn_logo.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />
+    <Folder Include="logos\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using Ecng.ComponentModel;
 using Ecng.Serialization;
+using StockSharp.Futunn.component;
 using StockSharp.Localization;
 using StockSharp.Messages;
 using System;
@@ -24,7 +25,7 @@ namespace StockSharp.Futunn
     [CategoryLoc(LocalizedStrings.StockExchangeKey)]
     [DescriptionLoc("Str1770", "Futunn")]
     [DisplayNameLoc("Futunn")]
-    //[MediaIcon("Futunn.png")]
+    [FutunnIcon("Futunn_logo.png")]
     [MessageAdapterCategory(MessageAdapterCategories.Asia | MessageAdapterCategories.Stock 
         | MessageAdapterCategories.RealTime | MessageAdapterCategories.Free 
         | MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles 

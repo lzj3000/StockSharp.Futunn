@@ -39,6 +39,7 @@ namespace StockSharp.Futunn
 			OrderStatusMessage osm = new OrderStatusMessage();
 			
 			var order = obj.S2C.OrderFill;
+			
 			if (securityTradeList.ContainsKey(order.Code)) {
 				securityTradeList.Remove(order.Code);
 				var reg = securityTradeList[order.Code];
