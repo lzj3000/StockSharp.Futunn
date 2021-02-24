@@ -40,14 +40,14 @@ namespace StockSharp.Futunn
         /// <summary>
         /// 国内股票市场
         /// </summary>
-        [Display(ResourceType = typeof(LocalizedStrings),
-            Name = LocalizedStrings.Str241Key, Description = "国内的股票市场选择", GroupName = "General", Order = 1)]
+        [Display(
+            Name = "StockMarket", Description = "股票市场选择", GroupName = "General", Order = 1)]
         public StockMarket StockMarket { get; set; }
         /// <summary>
         /// 登录名
         /// </summary>
-        [Display (ResourceType = typeof(LocalizedStrings),
-            Name = LocalizedStrings.LoginKey, Description = "平台账号是您在富途的用户 ID（包括牛牛号和 moomoo 号）", GroupName = "Str174", Order = 1)]
+        [Display (
+            Name = LocalizedStrings.LoginKey, Description = "平台账号是您在富途的用户 ID（包括牛牛号和 moomoo 号）", GroupName = "Connection", Order = 1)]
         public string Login { get; set; }
         /// <summary>
         /// 密码
@@ -65,26 +65,26 @@ namespace StockSharp.Futunn
         /// OpendPort
         /// </summary>
         [Display(
-            Name = "Port", Description = "Str2262", GroupName = "Str174", Order = 4)]
+            Name = "Port", Description = "连接端口", GroupName = "Connection", Order = 4)]
         public ushort OpendPort { get; set; }
         /// <summary>
         /// 交易业务账户
         /// </summary>
         [Display( Name = "BussinessAccount", Description = "交易业务账户是您的证券账户，需要完成相应券商的开户流程才能得到，主要用于出入金、融资融券、交易各类金融标的、直接持有资产和持仓。",
-            GroupName = "Str174", Order = 5)]
+            GroupName = "Connection", Order = 5)]
         public ulong TrdAcc { get; set; }
         /// <summary>
         /// RSA私钥文件路径，用于加密和OpenD的连接
         /// </summary>
         [Display( Name = "PrivateKeyPath", Description = "RSA私钥文件路径，用于加密和OpenD的连接,当地址不为127.0.0.1时，必须设置",
-           GroupName = "Str174", Order = 6)]
+           GroupName = "Connection", Order = 6)]
         [Editor(typeof(IFolderBrowserEditor), typeof(IFolderBrowserEditor))]
         public string RsaKeyFilePath { get; set; }
         /// <summary>
         /// 
         /// </summary>
         [Display(Name = "IsDemo", Description = "是否Demo.",
-          GroupName = "Str174", Order = 6)]
+          GroupName = "Connection", Order = 6)]
         public bool IsDemo { get ; set ; }
 
         /// <inheritdoc />
