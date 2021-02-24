@@ -4,23 +4,26 @@ using StockSharp.Futunn;
 using StockSharp.Messages;
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Security;
 using System.Threading;
+using System.Linq;
+using System.Drawing;
 
 namespace Futununu_Test
 {
     [TestClass]
     public class FutununuMessageAdapter_Test
     {
-      
+        private const string UriString = "pack://application:,,,/StockSharp.Futunn;component/logos/futunn_logo.png";
         FutunnMessageAdapter adapter;
         public FutununuMessageAdapter_Test()
         {
             adapter = new FutunnMessageAdapter(new IncrementalIdGenerator());
-            adapter.StockMarket = StockMarket.CNSH_Security;
+            adapter.StockMarket = StockMarket.US_Security;
             adapter.OpendIP = "127.0.0.1";
             adapter.OpendPort = 11111;
-            adapter.Login = "123456";
+            adapter.Login = "7715583";
             char[] psc = "123456".ToCharArray();
             adapter.Password = new SecureString();
             foreach (var c in psc)
@@ -28,6 +31,7 @@ namespace Futununu_Test
             adapter.NewOutMessage += Adapter_NewOutMessage;
             
         }
+       
         [TestMethod]
         public void Connect_Test()
         {
@@ -38,7 +42,6 @@ namespace Futununu_Test
         [TestMethod]
         public void SecurityLookup_Test()
         {
-
             Console.WriteLine("Test SecurityLookup");
             var meg = new SecurityLookupMessage();
             meg.SecurityTypes = new SecurityTypes[] {
@@ -71,7 +74,12 @@ namespace Futununu_Test
         [TestMethod]
         public void PortfolioLookup_Test()
         {
-
+            Connect_Test();
+            Console.WriteLine("Test PortfolioLookup");
+            var msg = new PortfolioLookupMessage();
+            msg.IsSubscribe = true;
+            adapter.SendInMessage(msg);
+            Thread.Sleep(3000);
         }
         SecurityMessage security;
         private void Adapter_NewOutMessage(Message obj)

@@ -1,6 +1,5 @@
 ﻿using Ecng.ComponentModel;
 using Ecng.Serialization;
-using StockSharp.Futunn.component;
 using StockSharp.Localization;
 using StockSharp.Messages;
 using System;
@@ -25,7 +24,7 @@ namespace StockSharp.Futunn
     [CategoryLoc(LocalizedStrings.StockExchangeKey)]
     [DescriptionLoc("Str1770", "Futunn")]
     [DisplayNameLoc("Futunn")]
-    [FutunnIcon("Futunn_logo.png")]
+    [FutunnIcon()]
     [MessageAdapterCategory(MessageAdapterCategories.Asia | MessageAdapterCategories.Stock 
         | MessageAdapterCategories.RealTime | MessageAdapterCategories.Free 
         | MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles 
@@ -41,45 +40,50 @@ namespace StockSharp.Futunn
         /// <summary>
         /// 国内股票市场
         /// </summary>
-        [Display(Name = "股票市场", Description = "国内的股票市场选择", GroupName = "General", Order = 1)]
+        [Display(ResourceType = typeof(LocalizedStrings),
+            Name = LocalizedStrings.Str241Key, Description = "国内的股票市场选择", GroupName = "General", Order = 1)]
         public StockMarket StockMarket { get; set; }
         /// <summary>
         /// 登录名
         /// </summary>
-        [Display (Name = "平台账号", Description = "平台账号是您在富途的用户 ID（包括牛牛号和 moomoo 号）", GroupName = "Str174", Order = 1)]
+        [Display (ResourceType = typeof(LocalizedStrings),
+            Name = LocalizedStrings.LoginKey, Description = "平台账号是您在富途的用户 ID（包括牛牛号和 moomoo 号）", GroupName = "Str174", Order = 1)]
         public string Login { get; set; }
         /// <summary>
         /// 密码
         /// </summary>
-        [Display(Name = "密码", Description = "Str2262", GroupName = "Str174", Order = 2)]
+        [Display(ResourceType = typeof(LocalizedStrings),
+            Name = LocalizedStrings.PasswordKey, Description = "Str2262", GroupName = "Str174", Order = 2)]
         public SecureString Password { get; set; }
         /// <summary>
         /// OpendIP
         /// </summary>
-        [Display( Name = "网关IP", Description = "Str2262", GroupName = "Str174", Order = 3)]
+        [Display(ResourceType = typeof(LocalizedStrings),
+            Name = LocalizedStrings.AddressKey, Description = "Str2262", GroupName = "Str174", Order = 3)]
         public string OpendIP { get; set; }
         /// <summary>
         /// OpendPort
         /// </summary>
-        [Display( Name = "网关端口", Description = "Str2262", GroupName = "Str174", Order = 4)]
+        [Display(
+            Name = "Port", Description = "Str2262", GroupName = "Str174", Order = 4)]
         public ushort OpendPort { get; set; }
         /// <summary>
         /// 交易业务账户
         /// </summary>
-        [Display( Name = "交易业务账户", Description = "交易业务账户是您的证券账户，需要完成相应券商的开户流程才能得到，主要用于出入金、融资融券、交易各类金融标的、直接持有资产和持仓。",
+        [Display( Name = "BussinessAccount", Description = "交易业务账户是您的证券账户，需要完成相应券商的开户流程才能得到，主要用于出入金、融资融券、交易各类金融标的、直接持有资产和持仓。",
             GroupName = "Str174", Order = 5)]
         public ulong TrdAcc { get; set; }
         /// <summary>
         /// RSA私钥文件路径，用于加密和OpenD的连接
         /// </summary>
-        [Display( Name = "私钥路径", Description = "RSA私钥文件路径，用于加密和OpenD的连接.",
+        [Display( Name = "PrivateKeyPath", Description = "RSA私钥文件路径，用于加密和OpenD的连接,当地址不为127.0.0.1时，必须设置",
            GroupName = "Str174", Order = 6)]
         [Editor(typeof(IFolderBrowserEditor), typeof(IFolderBrowserEditor))]
         public string RsaKeyFilePath { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        [Display(Name = "是否Demo", Description = "是否Demo.",
+        [Display(Name = "IsDemo", Description = "是否Demo.",
           GroupName = "Str174", Order = 6)]
         public bool IsDemo { get ; set ; }
 

@@ -134,6 +134,7 @@ namespace StockSharp.Futunn
 
         private void ProcessSecurityLookup(SecurityLookupMessage lookupMsg)
 		{
+			SendSubscriptionResult(lookupMsg);
 			var secTypes = lookupMsg.GetSecurityTypes();
 			List<SecurityType> securityTypeList = new List<SecurityType>();
 			foreach (var sectype in secTypes) {
@@ -147,7 +148,6 @@ namespace StockSharp.Futunn
 					continue;
 				SendOutMessage(secMsg);
 			}
-			SendSubscriptionResult(lookupMsg);
 		}
 		public override TimeSpan GetHistoryStepSize(DataType dataType, out TimeSpan iterationInterval)
 		{

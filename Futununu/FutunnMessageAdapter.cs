@@ -179,7 +179,7 @@ namespace StockSharp.Futunn
                 }
                 if (transaction == null)
                 {
-                    transaction = new Transaction(OpendIP, OpendPort, Login, Password.ToString(), (int)StockMarket);
+                    transaction = new Transaction(OpendIP, OpendPort, Login, Password, (int)StockMarket);
                     transaction.Error += On_Error;
                     SubscribeTransactionInfo();
                 }

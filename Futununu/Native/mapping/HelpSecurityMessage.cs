@@ -12,12 +12,11 @@ namespace StockSharp.Futunn.Native.mapping
         {
             return new SecurityMessage()
             {
-                SecurityId = new SecurityId() { SecurityCode = info.Basic.Security.Code, BoardCode = "FUTU" },
+                SecurityId = new SecurityId() { SecurityCode = info.Basic.Security.Code, BoardCode = Extensions.FutunnBoard },
                 SecurityType = ((SecurityType)info.Basic.SecType).Convert(),
                 Name = info.Basic.Name,
                 MinVolume = info.Basic.LotSize,
                 VolumeStep = info.Basic.LotSize,
-                //BackMode= MessageBackModes.Direct,
             };
         }
     }

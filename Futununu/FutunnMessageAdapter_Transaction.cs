@@ -71,6 +71,7 @@ namespace StockSharp.Futunn
 			if (!securityTradeList.ContainsKey(regMsg.SecurityId.SecurityCode))
 			{
 				securityTradeList.Add(regMsg.SecurityId.SecurityCode, regMsg);
+				transaction.IsDemo = IsDemo;
 				transaction.OrderRegister(regMsg.SecurityId.SecurityCode,
 					(double)regMsg.Volume,
 					(double)price,
@@ -96,6 +97,33 @@ namespace StockSharp.Futunn
 		}
 		private void ProcessPortfolioLookup(PortfolioLookupMessage message)
 		{
+			if (message != null)
+			{
+				if (!message.IsSubscribe)
+					return;
+			}
+
+			var transactionId = message?.TransactionId ?? 0;
+			var pfName = "Stock";
+			SendOutMessage(new PortfolioMessage
+			{
+				PortfolioName= pfName,
+				BoardCode = Extensions.FutunnBoard,
+				OriginalTransactionId = transactionId,
+			});
+			if (message != null)
+				SendSubscriptionResult(message);
+			var res = transaction.GetPositionList();
+			foreach (var position in res.S2C.PositionListList)
+			{
+				var msg = this.CreatePositionChangeMessage(pfName,new SecurityId() { SecurityCode=position.Code,BoardCode=position.SecMarket.ToString()});
+				msg.Side = ((TrdSide)position.PositionSide).Convert();
+				msg.SubscriptionId = (long)position.PositionID;
+				msg.TryAdd(PositionChangeTypes.CurrentValue, (decimal)position.Val, true);
+				msg.TryAdd(PositionChangeTypes.CurrentPrice, (decimal)position.Price, true);
+				msg.TryAdd(PositionChangeTypes.TradesCount, (decimal)position.Qty, true);
+				SendOutMessage(msg);
+			}
 		}
 	}
 }

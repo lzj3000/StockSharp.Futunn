@@ -17,8 +17,8 @@
     <Compile Remove="Futununu_Test\**" />
     <EmbeddedResource Remove="Futununu_Test\**" />
     <None Remove="Futununu_Test\**" />
+    <None Remove="localized\futunn_logo.png" />
     <None Remove="logos\futunn.png" />
-    <None Remove="logos\futunn_logo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,12 +50,6 @@
     <Resource Include="lib\win32-x86\FTAPIChannel.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="logos\futunn_logo.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="logos\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,5 +58,10 @@
     <PackageReference Include="Ecng.Serialization" Version="1.0.46" />
     <PackageReference Include="Ecng.Localization" Version="1.0.46" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>

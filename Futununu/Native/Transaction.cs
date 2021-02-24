@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Threading;
 using Futu.OpenApi;
 using Futu.OpenApi.Pb;
@@ -7,12 +9,16 @@ namespace StockSharp.Futunn.Native
 {
     public class Transaction : FutuAPI
     {
-        public Transaction(string ip, ushort port, string userid, string password, int market)
+        public bool IsDemo { get; set; }
+        public Transaction(string ip, ushort port, string userid, SecureString password, int market)
         {
+            IntPtr pointerName = Marshal.SecureStringToBSTR(password);
+            var pass = Marshal.PtrToStringBSTR(pointerName);
+            Marshal.ZeroFreeBSTR(pointerName);
             OpendIP = ip;
             OpendPort = port;
             UserID = Convert.ToUInt64(userid);
-            Password = CalcMD5(password);
+            Password = CalcMD5(pass);
             MarketId = market;
             bool ret = InitConnectTrdSync();
             if (!ret)
@@ -23,7 +29,7 @@ namespace StockSharp.Futunn.Native
                 return 1;
             if (MarketId == 11)
                 return 2;
-            if (MarketId == 21||MarketId==22)
+            if (MarketId == 21 || MarketId == 22)
                 return 3;
             return 0;
         }
@@ -36,24 +42,31 @@ namespace StockSharp.Futunn.Native
                 return MarketId + 10;
             return 0;
         }
-        public TrdGetAccList.Response GetAccList()
+        public ulong GetAccList()
         {
-            return this.GetAccListSync(Convert.ToUInt64(UserID));
+            var list= this.GetAccListSync(Convert.ToUInt64(UserID));
+            return list.S2C.GetAccList(0).AccID;
         }
-
-        public void OrderRegister(string code, double qty, double price, int trdSide, int isReal = 0)
+        public int GetTrdEnv()
         {
+            var isReal = 0;
+            if (!IsDemo)
+                isReal = 1;
+            return isReal;
+        }
+        public void OrderRegister(string code, double qty, double price, int trdSide)
+        {
+          
             TrdUnlockTrade.Response unlockTradeRsp = UnlockTradeSync(Password, true);
             if (unlockTradeRsp.RetType != (int)Common.RetType.RetType_Succeed)
             {
                 OnError(string.Format("unlockTradeSync err; retType={0} msg={1}\n", unlockTradeRsp.RetType, unlockTradeRsp.RetMsg));
             }
 
-            TrdGetAccList.Response accList = GetAccList();
-            var accID = accList.S2C.GetAccList(0).AccID;
+            var accID = GetAccList();
 
             TrdCommon.TrdHeader header = TrdCommon.TrdHeader.CreateBuilder()
-                      .SetTrdEnv(isReal)
+                      .SetTrdEnv(GetTrdEnv())
                       .SetAccID(accID)
                       .SetTrdMarket(GetTrdMarket())
                       .Build();
@@ -75,7 +88,7 @@ namespace StockSharp.Futunn.Native
                       .Build();
             TrdGetOrderFillList.Response getOrderFillListRsp = GetOrderFillListSync(accID,
                     ((TrdCommon.TrdMarket)GetTrdMarket()),
-                    (TrdCommon.TrdEnv)isReal, false, filterConditions);
+                    (TrdCommon.TrdEnv)GetTrdEnv(), false, filterConditions);
         }
         public event Action<TrdUpdateOrder.Response> OrderStates;
         public event Action<TrdUpdateOrderFill.Response> OrderTradeFill;
@@ -115,7 +128,7 @@ namespace StockSharp.Futunn.Native
                 lock (trdLock)
                 {
                     TrdCommon.TrdHeader header = TrdCommon.TrdHeader.CreateBuilder()
-             .SetAccID(281756457888247915L)
+             .SetAccID(GetAccList())
              .SetTrdEnv((int)TrdCommon.TrdEnv.TrdEnv_Simulate)
              .SetTrdMarket(GetTrdMarket())
              .Build();
@@ -133,6 +146,21 @@ namespace StockSharp.Futunn.Native
                 Monitor.Wait(syncEvent);
                 return (TrdModifyOrder.Request)reqInfo.Rsp;
             }
+        }
+        public TrdGetPositionList.Response GetPositionList() {
+            TrdUnlockTrade.Response unlockTradeRsp = UnlockTradeSync(Password, true);
+            if (unlockTradeRsp.RetType != (int)Common.RetType.RetType_Succeed)
+            {
+                OnError(string.Format("unlockTradeSync err; retType={0} msg={1}\n", unlockTradeRsp.RetType, unlockTradeRsp.RetMsg));
+            }
+            TrdGetPositionList.Response response = this.GetPositionListSync(
+                 GetAccList(),
+                 (TrdCommon.TrdMarket)GetTrdMarket(),
+                 ((TrdCommon.TrdEnv)GetTrdEnv()),
+                 null,
+                 null,null,true
+                );
+            return response;
         }
     }
 }

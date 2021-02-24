@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="futunn_logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Futununu\Futunn.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="StockSharp.Media">
+      <HintPath>..\Futununu\lib\StockSharp.Media.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="futunn_logo.png" />
+  </ItemGroup>
+
+</Project>
