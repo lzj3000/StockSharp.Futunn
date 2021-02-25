@@ -23,6 +23,11 @@
 
   <ItemGroup>
     <None Remove="lib\win32-x86\FTAPIChannel.dll" />
+    <None Remove="logos\futunn_logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="logos\futunn_logo.png" />
   </ItemGroup>
 
   <ItemGroup>

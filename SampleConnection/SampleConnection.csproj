@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="common_samples.props" />
+  <PropertyGroup>
+    <ProjectGuid>{1F698A62-C461-4A8A-9D81-FFEF09C0DC52}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ApplicationIcon></ApplicationIcon>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Ecng.Interop.Windows" Version="1.0.48" />
+    <PackageReference Include="StockSharp.Xaml" Version="5.0.67" />
+    <PackageReference Include="StockSharp.Xaml.Charting" Version="5.0.66" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Configuration.Adapters\Configuration.Adapters.csproj" />
+    <ProjectReference Include="..\Futununu\Futunn.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="StockSharp.Algo">
+      <HintPath>lib\StockSharp.Algo.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.BusinessEntities">
+      <HintPath>lib\StockSharp.BusinessEntities.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Configuration">
+      <HintPath>lib\StockSharp.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Localization">
+      <HintPath>lib\StockSharp.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Logging">
+      <HintPath>lib\StockSharp.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Media">
+      <HintPath>lib\StockSharp.Media.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Messages">
+      <HintPath>lib\StockSharp.Messages.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

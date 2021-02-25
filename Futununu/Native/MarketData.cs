@@ -19,9 +19,12 @@ namespace StockSharp.Futunn.Native
            
         }
         private void connectSync() {
-            bool ret = InitConnectQotSync();
-            if (!ret)
-                OnError("fail to connect opend");
+            if (this.qotConnStatus != ConnStatus.READY)
+            {
+                bool ret = InitConnectQotSync();
+                if (!ret)
+                    OnError("fail to connect opend");
+            }
         }
         public List<SecurityStaticInfo> GetSecurityList(SecurityType[] securityTypes) {
             connectSync();
@@ -47,27 +50,43 @@ namespace StockSharp.Futunn.Native
             return stockCodes;
         }
        
-        public List<Snapshot> GetSnapshots(Security[] securities) {
+        public Snapshot GetSnapshots(string code) {
             connectSync();
+            Security security= MakeSec(((QotMarket)MarketId), code);
             List<Snapshot> snapshots = new List<Snapshot>();
-            Response rsp = GetSecuritySnapshotSync(securities);
+            Response rsp = GetSecuritySnapshotSync(new Security[] { security });
             if (rsp.RetType != (int)Common.RetType.RetType_Succeed)
             {
                 OnError(string.Format("getSecuritySnapshotSync err: retType={0} msg={1}\n", rsp.RetType, rsp.RetMsg));
             }
-            else
+            return rsp.S2C.SnapshotListList[0];
+
+            //else
+            //{
+               
+            //    foreach (Snapshot snapshot in rsp.S2C.SnapshotListList)
+            //    {
+            //        snapshots.Add(snapshot);
+            //    }
+            //}
+            //return snapshots;
+        }
+        public QotSub.Response GetBasicQot(string code)
+        {
+            connectSync();
+            List<Security> secArr = new List<Security>();
+            secArr.Add(MakeSec(((QotMarket)MarketId), code));
+            List<SubType> subTypes = new List<SubType>() {
+                    SubType.SubType_Basic
+            };
+            QotSub.Response subRsp = SubSync(secArr, subTypes, false, false); 
+            if (subRsp.RetType != (int)Common.RetType.RetType_Succeed)
             {
-                foreach (Snapshot snapshot in rsp.S2C.SnapshotListList)
-                {
-                    snapshots.Add(snapshot);
-                }
+                OnError(string.Format("subSync err; retType={0} msg={1}\n", subRsp.RetType, subRsp.RetMsg));
             }
-            return snapshots;
+            return subRsp;
         }
-        public void GetBasicQot() { 
-        
-           
-        }
+
         public void SubAllInfo(string[] securities,bool isSub)
         {
             connectSync();

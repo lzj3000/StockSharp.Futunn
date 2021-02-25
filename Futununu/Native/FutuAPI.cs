@@ -7,6 +7,7 @@ using Futu.OpenApi;
 using Futu.OpenApi.Pb;
 using Google.ProtocolBuffers;
 using System.Security.Cryptography;
+using StockSharp.Logging;
 
 namespace StockSharp.Futunn.Native
 {
@@ -29,7 +30,7 @@ namespace StockSharp.Futunn.Native
             this.SyncEvent = syncEvent;
         }
     }
-    public class FutuAPI : FTSPI_Conn, FTSPI_Qot, FTSPI_Trd
+    public class FutuAPI :FTSPI_Conn, FTSPI_Qot, FTSPI_Trd
     {
         protected object qotLock = new object();
         protected object trdLock = new object();

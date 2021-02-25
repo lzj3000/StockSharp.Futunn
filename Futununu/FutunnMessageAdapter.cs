@@ -46,11 +46,30 @@ namespace StockSharp.Futunn
             this.AddSupportedResultMessage(MessageTypes.OrderStatus);
             FTAPI.Init();
         }
-       
+        public override bool IsAllDownloadingSupported(DataType dataType)
+         => dataType == DataType.Securities || base.IsAllDownloadingSupported(dataType);
+
+        /// <inheritdoc />
+        public override TimeSpan GetHistoryStepSize(DataType dataType, out TimeSpan iterationInterval)
+        {
+            var step = base.GetHistoryStepSize(dataType, out iterationInterval);
+
+            if (dataType == DataType.Ticks)
+                step = TimeSpan.FromDays(1);
+
+            return step;
+        }
         protected override bool OnSendInMessage(Message message)
         {
             switch (message.Type)
             {
+                case MessageTypes.Reset:
+                    {
+                        onDisconnec();
+                        SendOutMessage(new ResetMessage());
+                        break;
+                    }
+
                 case MessageTypes.Connect:
                     {
                         onConnect();
@@ -61,10 +80,7 @@ namespace StockSharp.Futunn
                         onDisconnec();
                         break;
                     }
-                case MessageTypes.Reset:
-                    {
-                        break;
-                    }
+             
                 case MessageTypes.MarketData:
                     {
                         ProcessMarketData((MarketDataMessage)message);
@@ -141,7 +157,7 @@ namespace StockSharp.Futunn
             client = new FTAPI_Qot();
             var conn = new ConnCallback();
             conn.Connected += Conn_Connected;
-            conn.Disconnected += Conn_Disconnected;
+            conn.Parent = this;
             client.SetConnCallback(conn);
             client.InitConnect(OpendIP, OpendPort, false);
         }
@@ -160,12 +176,9 @@ namespace StockSharp.Futunn
 
             if (client != null)
                 client.Close();
-        }
-
-        private void Conn_Disconnected()
-        {
             SendOutDisconnectMessage(true);
         }
+
 
         private void Conn_Connected(bool iscoon, string errMsg)
         {
@@ -183,7 +196,6 @@ namespace StockSharp.Futunn
                     transaction.Error += On_Error;
                     SubscribeTransactionInfo();
                 }
-               
                 SendOutMessage(new ConnectMessage());
             }
             else

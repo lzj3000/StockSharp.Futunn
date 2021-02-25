@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="common.props" />
+  <PropertyGroup>
+    <ProjectGuid>{7D6C7AD7-2735-4BC0-8E37-B21584E43264}</ProjectGuid>
+    <RootNamespace>StockSharp.Configuration</RootNamespace>
+    <AssemblyName>StockSharp.Configuration.Adapters</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Futununu\Futunn.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="StockSharp.Configuration">
+      <HintPath>..\SampleConnection\lib\StockSharp.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Localization">
+      <HintPath>..\SampleConnection\lib\StockSharp.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Logging">
+      <HintPath>..\SampleConnection\lib\StockSharp.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Media">
+      <HintPath>..\SampleConnection\lib\StockSharp.Media.dll</HintPath>
+    </Reference>
+    <Reference Include="StockSharp.Messages">
+      <HintPath>..\SampleConnection\lib\StockSharp.Messages.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

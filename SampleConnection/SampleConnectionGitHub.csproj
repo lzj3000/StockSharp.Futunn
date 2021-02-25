@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\common_samples.props" />
+  <PropertyGroup>
+    <ProjectGuid>{9E26FE45-AE68-4374-8A2F-94E43BD8400F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SampleConnection</RootNamespace>
+    <AssemblyName>SampleConnection</AssemblyName>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ApplicationIcon>..\..\..\stocksharp.ico</ApplicationIcon>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="StockSharp.Xaml.Charting" Version="$(StockSharpVer)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\..\..\stocksharp.ico">
+      <Link>stocksharp.ico</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Algo\Algo.csproj" />
+    <ProjectReference Include="..\..\..\BusinessEntities\BusinessEntities.csproj" />
+    <ProjectReference Include="..\..\..\Configuration.Adapters\Configuration.AdaptersGitHub.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\ConfigurationGitHub.csproj" />
+    <ProjectReference Include="..\..\..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\..\..\Logging\Logging.csproj" />
+    <ProjectReference Include="..\..\..\Media\Media.csproj" />
+    <ProjectReference Include="..\..\..\Messages\Messages.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+</Project>

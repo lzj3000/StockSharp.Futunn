@@ -27,8 +27,18 @@ namespace StockSharp.Futunn
 				if (!securityList.ContainsKey(mdMsg.SecurityId.SecurityCode))
 				{
 					securityList.Add(mdMsg.SecurityId.SecurityCode, mdMsg);
-					market.SubAllInfo(securityList.Keys.ToArray(), true);
 				}
+				if (mdMsg.DataType2 == DataType.MarketDepth)
+				{
+					
+				}
+				if (mdMsg.DataType2 == DataType.Ticks) { 
+				
+				}
+				if (mdMsg.DataType2 == DataType.OrderLog) { 
+				
+				}
+				
 			}
 			else
 			{
@@ -134,25 +144,31 @@ namespace StockSharp.Futunn
 
         private void ProcessSecurityLookup(SecurityLookupMessage lookupMsg)
 		{
-			SendSubscriptionResult(lookupMsg);
 			var secTypes = lookupMsg.GetSecurityTypes();
 			List<SecurityType> securityTypeList = new List<SecurityType>();
 			foreach (var sectype in secTypes) {
 				securityTypeList.Add(sectype.Convert());
 			}
+			if (securityTypeList.Count == 0) {
+				securityTypeList.Add(SecurityType.SecurityType_Eqty);
+			}
 			var securities = market.GetSecurityList(securityTypeList.ToArray());
-			foreach(var sec in securities) {
+			for(var i=0;i<10; i++) {
+				var sec = securities[i];
 				var secMsg = sec.Convert();
 				secMsg.OriginalTransactionId = lookupMsg.TransactionId;
-				if (!secMsg.IsMatch(lookupMsg, secTypes))
-					continue;
+				
+				var qot=market.GetSnapshots(secMsg.SecurityId.SecurityCode);
+				secMsg.AddValue(nameof(Level1Fields.LastTradePrice), (decimal)qot.Basic.LastClosePrice);
+				secMsg.AddValue(nameof(Level1Fields.BestBidPrice), (decimal)qot.Basic.BidPrice);
+				secMsg.AddValue(nameof(Level1Fields.BidsVolume), (decimal)qot.Basic.BidVol);
+				secMsg.AddValue(nameof(Level1Fields.BestAskPrice), (decimal)qot.Basic.AskPrice);
+				secMsg.AddValue(nameof(Level1Fields.AsksVolume), (decimal)qot.Basic.AskVol);
 				SendOutMessage(secMsg);
 			}
+			SendSubscriptionResult(lookupMsg);
 		}
-		public override TimeSpan GetHistoryStepSize(DataType dataType, out TimeSpan iterationInterval)
-		{
-			return base.GetHistoryStepSize(dataType, out iterationInterval);
-		}
+
 		protected override IEnumerable<TimeSpan> GetTimeFrames(SecurityId securityId, DateTimeOffset? from, DateTimeOffset? to)
 		{
 			return base.GetTimeFrames(securityId, from, to);

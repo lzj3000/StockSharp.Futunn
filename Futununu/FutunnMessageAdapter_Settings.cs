@@ -24,7 +24,7 @@ namespace StockSharp.Futunn
     [CategoryLoc(LocalizedStrings.StockExchangeKey)]
     [DescriptionLoc("Str1770", "Futunn")]
     [DisplayNameLoc("Futunn")]
-    [FutunnIcon()]
+    //[FutunnIcon()]
     [MessageAdapterCategory(MessageAdapterCategories.Asia | MessageAdapterCategories.Stock 
         | MessageAdapterCategories.RealTime | MessageAdapterCategories.Free 
         | MessageAdapterCategories.Ticks | MessageAdapterCategories.Candles 

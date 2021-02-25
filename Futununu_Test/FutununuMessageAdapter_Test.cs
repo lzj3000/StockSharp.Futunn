@@ -24,7 +24,7 @@ namespace Futununu_Test
             adapter.OpendIP = "127.0.0.1";
             adapter.OpendPort = 11111;
             adapter.Login = "7715583";
-            char[] psc = "123456".ToCharArray();
+            char[] psc = "213166".ToCharArray();
             adapter.Password = new SecureString();
             foreach (var c in psc)
                 adapter.Password.AppendChar(c);
@@ -56,7 +56,7 @@ namespace Futununu_Test
             Console.WriteLine("Test MarketData");
             var msg = new MarketDataMessage();
             msg.IsSubscribe = true;
-            msg.SecurityId =new SecurityId() { SecurityCode= "688185" };
+            msg.SecurityId =new SecurityId() { SecurityCode= "06606" };
             msg.DataType2 = DataType.MarketDepth;
             adapter.SendInMessage(msg);
             Thread.Sleep(3000);
