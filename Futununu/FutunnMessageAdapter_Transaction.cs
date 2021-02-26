@@ -119,6 +119,9 @@ namespace StockSharp.Futunn
 				var msg = this.CreatePositionChangeMessage(pfName,new SecurityId() { SecurityCode=position.Code,BoardCode=position.SecMarket.ToString()});
 				msg.Side = ((TrdSide)position.PositionSide).Convert();
 				msg.SubscriptionId = (long)position.PositionID;
+				msg.TryAdd(PositionChangeTypes.BeginValue, (decimal)position.Val, true);
+				msg.TryAdd(PositionChangeTypes.CurrentValue, (decimal)position.Price, true);
+				msg.TryAdd(PositionChangeTypes.BlockedValue, (decimal)position.Qty, true);
 				msg.TryAdd(PositionChangeTypes.CurrentValue, (decimal)position.Val, true);
 				msg.TryAdd(PositionChangeTypes.CurrentPrice, (decimal)position.Price, true);
 				msg.TryAdd(PositionChangeTypes.TradesCount, (decimal)position.Qty, true);

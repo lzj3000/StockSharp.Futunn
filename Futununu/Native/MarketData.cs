@@ -49,10 +49,24 @@ namespace StockSharp.Futunn.Native
 
             return stockCodes;
         }
-       
-        public Snapshot GetSnapshots(string code) {
+        public IList<Snapshot> GetSnapshots(string[] codes)
+        {
             connectSync();
-            Security security= MakeSec(((QotMarket)MarketId), code);
+            List<Security> list = new List<Security>();
+            foreach (var code in codes)
+                list.Add(MakeSec(((QotMarket)MarketId), code));
+            List<Snapshot> snapshots = new List<Snapshot>();
+            Response rsp = GetSecuritySnapshotSync(list.ToArray());
+            if (rsp.RetType != (int)Common.RetType.RetType_Succeed)
+            {
+                OnError(string.Format("getSecuritySnapshotSync err: retType={0} msg={1}\n", rsp.RetType, rsp.RetMsg));
+            }
+            return rsp.S2C.SnapshotListList;
+        }
+        public Snapshot GetSnapshots(string code)
+        {
+            connectSync();
+            Security security = MakeSec(((QotMarket)MarketId), code);
             List<Snapshot> snapshots = new List<Snapshot>();
             Response rsp = GetSecuritySnapshotSync(new Security[] { security });
             if (rsp.RetType != (int)Common.RetType.RetType_Succeed)
@@ -60,18 +74,8 @@ namespace StockSharp.Futunn.Native
                 OnError(string.Format("getSecuritySnapshotSync err: retType={0} msg={1}\n", rsp.RetType, rsp.RetMsg));
             }
             return rsp.S2C.SnapshotListList[0];
-
-            //else
-            //{
-               
-            //    foreach (Snapshot snapshot in rsp.S2C.SnapshotListList)
-            //    {
-            //        snapshots.Add(snapshot);
-            //    }
-            //}
-            //return snapshots;
         }
-        public QotSub.Response GetBasicQot(string code)
+        public QotGetBasicQot.Request GetBasicQot(string code)
         {
             connectSync();
             List<Security> secArr = new List<Security>();
@@ -79,12 +83,68 @@ namespace StockSharp.Futunn.Native
             List<SubType> subTypes = new List<SubType>() {
                     SubType.SubType_Basic
             };
-            QotSub.Response subRsp = SubSync(secArr, subTypes, false, false); 
+            QotSub.Response subRsp = SubSync(secArr, subTypes, true, false);
             if (subRsp.RetType != (int)Common.RetType.RetType_Succeed)
             {
                 OnError(string.Format("subSync err; retType={0} msg={1}\n", subRsp.RetType, subRsp.RetMsg));
             }
-            return subRsp;
+            ReqInfo reqInfo = null;
+            Object syncEvent = new Object();
+            lock (syncEvent)
+            {
+                lock (trdLock)
+                {
+                    QotCommon.Security sec = QotCommon.Security.CreateBuilder()
+                   .SetMarket(MarketId)
+                   .SetCode(code)
+                   .Build();
+                    QotGetBasicQot.C2S c2s = QotGetBasicQot.C2S.CreateBuilder()
+                            .AddSecurityList(sec)
+                            .Build();
+                    QotGetBasicQot.Request req = QotGetBasicQot.Request.CreateBuilder().SetC2S(c2s).Build();
+                    uint seqNo = qot.GetBasicQot(req);
+                    reqInfo = new ReqInfo(ProtoID.TrdModifyOrder, syncEvent);
+                    trdReqInfoMap.Add(seqNo, reqInfo);
+                }
+                Monitor.Wait(syncEvent);
+                return (QotGetBasicQot.Request)reqInfo.Rsp;
+            }
+        }
+        public QotGetTicker.Request GetTicker(string code)
+        {
+            connectSync();
+            List<Security> secArr = new List<Security>();
+            secArr.Add(MakeSec(((QotMarket)MarketId), code));
+            List<SubType> subTypes = new List<SubType>() {
+                    SubType.SubType_Ticker
+            };
+            QotSub.Response subRsp = SubSync(secArr, subTypes, true, false);
+            if (subRsp.RetType != (int)Common.RetType.RetType_Succeed)
+            {
+                OnError(string.Format("subSync err; retType={0} msg={1}\n", subRsp.RetType, subRsp.RetMsg));
+            }
+            ReqInfo reqInfo = null;
+            Object syncEvent = new Object();
+            lock (syncEvent)
+            {
+                lock (trdLock)
+                {
+                    QotCommon.Security sec = QotCommon.Security.CreateBuilder()
+                    .SetMarket(MarketId)
+                    .SetCode(code)
+                    .Build();
+                    QotGetTicker.C2S c2s = QotGetTicker.C2S.CreateBuilder()
+                            .SetSecurity(sec)
+                            .SetMaxRetNum(10)
+                            .Build();
+                    QotGetTicker.Request req = QotGetTicker.Request.CreateBuilder().SetC2S(c2s).Build();
+                    uint seqNo = qot.GetTicker(req);
+                    reqInfo = new ReqInfo(ProtoID.TrdModifyOrder, syncEvent);
+                    trdReqInfoMap.Add(seqNo, reqInfo);
+                }
+                Monitor.Wait(syncEvent);
+                return (QotGetTicker.Request)reqInfo.Rsp;
+            }    
         }
 
         public void SubAllInfo(string[] securities,bool isSub)

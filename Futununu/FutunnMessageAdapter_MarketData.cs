@@ -18,35 +18,80 @@ namespace StockSharp.Futunn
 			SubscribeSecurityInfo(mdMsg);
 			SendSubscriptionReply(mdMsg.TransactionId);
 		}
+
+		private void ProcessTime(Message message)
+		{
+			var list = market.GetSnapshots(subListTypes.Keys.ToArray());
+			foreach (var snap in list)
+			{
+				var code = snap.Basic.Security.Code;
+				var dataTypes = subListTypes[code];
+				foreach (var datatype in dataTypes) {
+
+					if (datatype == DataType.MarketDepth)
+					{
+						var msg = new QuoteChangeMessage();
+						msg.Bids = new List<QuoteChange>() { new QuoteChange((decimal)snap.Basic.BidPrice, snap.Basic.BidVol) }.ToArray();
+						msg.Asks = new List<QuoteChange>() { new QuoteChange((decimal)snap.Basic.AskPrice, snap.Basic.AskVol) }.ToArray();
+						msg.ServerTime = Convert.ToDateTime(snap.Basic.UpdateTime);
+						sendOutMessage(code, msg);
+					}
+					if (datatype == DataType.Ticks)
+					{
+						var msg = new ExecutionMessage();
+						msg.ExecutionType = ExecutionTypes.Tick;
+						msg.SecurityId = new SecurityId() { SecurityCode = code };
+						msg.TradePrice = (decimal)snap.Basic.AskPrice;
+						msg.TradeVolume = snap.Basic.Volume;
+						msg.ServerTime = Convert.ToDateTime(snap.Basic.UpdateTime);
+						msg.OriginSide = snap.Basic.IsInitialized ? Sides.Buy : Sides.Sell;
+						sendOutMessage(code,msg);
+					}
+					if (datatype == DataType.OrderLog)
+					{
+
+					}
+				}
+			}
+		}
 		private Dictionary<string, MarketDataMessage> securityList = new Dictionary<string, MarketDataMessage>();
+		private Dictionary<string, List<DataType>> subListTypes = new Dictionary<string, List<DataType>>();
 
 		private void SubscribeSecurityInfo(MarketDataMessage mdMsg)
 		{
+			var code = mdMsg.SecurityId.SecurityCode;
 			if (mdMsg.IsSubscribe)
 			{
-				if (!securityList.ContainsKey(mdMsg.SecurityId.SecurityCode))
-				{
+				if (!securityList.ContainsKey(code))
 					securityList.Add(mdMsg.SecurityId.SecurityCode, mdMsg);
-				}
-				if (mdMsg.DataType2 == DataType.MarketDepth)
-				{
-					
-				}
-				if (mdMsg.DataType2 == DataType.Ticks) { 
-				
-				}
-				if (mdMsg.DataType2 == DataType.OrderLog) { 
-				
-				}
-				
+				else
+					securityList[code] = mdMsg;
+				if (!subListTypes.ContainsKey(code))
+					subListTypes.Add(code, new List<DataType>());
+				if (!subListTypes[code].Contains(mdMsg.DataType2))
+					subListTypes[code].Add(mdMsg.DataType2);
 			}
 			else
 			{
-				market.SubAllInfo(new string[] { mdMsg.SecurityId.SecurityCode }, false);
-				securityList.Remove(mdMsg.SecurityId.SecurityCode);
+				if (subListTypes.ContainsKey(code)) {
+					if (subListTypes[code].Contains(mdMsg.DataType2)) {
+						subListTypes[code].Remove(mdMsg.DataType2);
+					}
+					if (subListTypes[code].Count == 0) {
+						subListTypes.Remove(code);
+					}
+				 }
 			}
 		}
-		
+
+		private void sendOutMessage(string code, Message message) {
+
+			SendOutMessage(message);
+			var msg = securityList[code];
+			SendSubscriptionResult(msg);
+			securityList.Remove(code);
+		}
+
 		private void SubscribeMarketInfo() {
             market.BasicQotCallback += Market_BasicQotCallback;
 			market.OrderBookCallback += Market_OrderBookCallback;
@@ -64,12 +109,13 @@ namespace StockSharp.Futunn
 			market.TickerCallback -= Market_TickerCallback;
 		}
 
+		
 	    
         private void Market_TickerCallback(Futu.OpenApi.Pb.QotUpdateTicker.Response obj)
         {
 			foreach (var ticker in obj.S2C.TickerListList)
 			{
-				SendOutMessage(new ExecutionMessage
+				sendOutMessage(obj.S2C.Security.Code,new ExecutionMessage
 				{
 					ExecutionType = ExecutionTypes.Tick,
 					SecurityId = new SecurityId() { SecurityCode = obj.S2C.Security.Code },
@@ -158,17 +204,43 @@ namespace StockSharp.Futunn
 				var secMsg = sec.Convert();
 				secMsg.OriginalTransactionId = lookupMsg.TransactionId;
 				
-				var qot=market.GetSnapshots(secMsg.SecurityId.SecurityCode);
-				secMsg.AddValue(nameof(Level1Fields.LastTradePrice), (decimal)qot.Basic.LastClosePrice);
-				secMsg.AddValue(nameof(Level1Fields.BestBidPrice), (decimal)qot.Basic.BidPrice);
-				secMsg.AddValue(nameof(Level1Fields.BidsVolume), (decimal)qot.Basic.BidVol);
-				secMsg.AddValue(nameof(Level1Fields.BestAskPrice), (decimal)qot.Basic.AskPrice);
-				secMsg.AddValue(nameof(Level1Fields.AsksVolume), (decimal)qot.Basic.AskVol);
+				
 				SendOutMessage(secMsg);
 			}
 			SendSubscriptionResult(lookupMsg);
 		}
+		private void Level1() {
+			//secMsg.AddValue(nameof(Level1Fields.LastTradeTime),);
+			//secMsg.AddValue(nameof(Level1Fields.LastTradeId),);
+			//secMsg.AddValue(nameof(Level1Fields.LastTradePrice),);
+			//secMsg.AddValue(nameof(Level1Fields.LastTradeVolume),);
+			//secMsg.AddValue(nameof(Level1Fields.BestBidPrice), );
+			//secMsg.AddValue(nameof(Level1Fields.BidsVolume),);
+			//secMsg.AddValue(nameof(Level1Fields.BestAskPrice),);
 
+			//secMsg.AddValue(nameof(Level1Fields.OpenInterest), );
+
+			//secMsg.AddValue(nameof(Level1Fields.ImpliedVolatility), );
+			//secMsg.AddValue(nameof(Level1Fields.HistoricalVolatility), );
+			//secMsg.AddValue(nameof(Level1Fields.OpenPrice), );
+			//secMsg.AddValue(nameof(Level1Fields.HighPrice), );
+			//secMsg.AddValue(nameof(Level1Fields.LowPrice), );
+			//secMsg.AddValue(nameof(Level1Fields.ClosePrice), );
+			//secMsg.AddValue(nameof(Level1Fields.Volume), );
+		}
+		private void ticks()
+		{
+			//SendOutMessage(new ExecutionMessage
+			//{
+			//	ExecutionType = ExecutionTypes.Tick,
+			//	SecurityId = new SecurityId() { SecurityCode = obj.S2C.Security.Code },
+			//	TradeId = ticker.Sequence,
+			//	TradePrice = (decimal)ticker.Price,
+			//	TradeVolume = ticker.Volume,
+			//	ServerTime = Convert.ToDateTime(ticker.Time),
+			//	OriginSide = ticker.Dir == 2 ? Sides.Buy : Sides.Sell,
+			//});
+		}
 		protected override IEnumerable<TimeSpan> GetTimeFrames(SecurityId securityId, DateTimeOffset? from, DateTimeOffset? to)
 		{
 			return base.GetTimeFrames(securityId, from, to);

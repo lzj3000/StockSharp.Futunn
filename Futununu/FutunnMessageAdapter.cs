@@ -86,11 +86,6 @@ namespace StockSharp.Futunn
                         ProcessMarketData((MarketDataMessage)message);
                         break;
                     }
-                case MessageTypes.Security:
-                    {
-                        ProcessSecurityLookup((SecurityLookupMessage)message);
-                        break;
-                    }
                 case MessageTypes.SecurityLookup:
                     {
                         ProcessSecurityLookup((SecurityLookupMessage)message);
@@ -120,6 +115,7 @@ namespace StockSharp.Futunn
                     }
                 case MessageTypes.Time:
                     {
+                        ProcessTime(message);
                         break;
                     }
                 default:
