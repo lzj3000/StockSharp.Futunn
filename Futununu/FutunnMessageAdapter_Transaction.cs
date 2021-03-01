@@ -59,7 +59,7 @@ namespace StockSharp.Futunn
 		{
 			var price = regMsg.Price;
 			if (regMsg.OrderType == OrderTypes.Market) {
-				var ob = market.GetOrderBook(regMsg.SecurityId.SecurityCode);
+				var ob = market.GetOrderBook(regMsg.SecurityId.SecurityCode,1);
 				if (regMsg.Side == Sides.Buy)
 				{
 					price = (decimal)ob.S2C.GetOrderBookBidList(0).Price;

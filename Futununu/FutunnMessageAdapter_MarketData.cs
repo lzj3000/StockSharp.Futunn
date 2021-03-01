@@ -31,25 +31,43 @@ namespace StockSharp.Futunn
 					if (datatype == DataType.MarketDepth)
 					{
 						var msg = new QuoteChangeMessage();
-						msg.Bids = new List<QuoteChange>() { new QuoteChange((decimal)snap.Basic.BidPrice, snap.Basic.BidVol) }.ToArray();
-						msg.Asks = new List<QuoteChange>() { new QuoteChange((decimal)snap.Basic.AskPrice, snap.Basic.AskVol) }.ToArray();
+						var books = market.GetOrderBook(code, 10);
+						var bids = new List<QuoteChange>();
+						foreach (var bid in books.S2C.OrderBookBidListList)
+							bids.Add(new QuoteChange((decimal)bid.Price, bid.Volume));
+						msg.Bids = bids.ToArray();
+						var asks = new List<QuoteChange>();
+						foreach (var ask in books.S2C.OrderBookAskListList)
+							asks.Add(new QuoteChange((decimal)ask.Price, ask.Volume));
+						msg.Asks = asks.ToArray();
 						msg.ServerTime = Convert.ToDateTime(snap.Basic.UpdateTime);
 						sendOutMessage(code, msg);
 					}
 					if (datatype == DataType.Ticks)
 					{
 						var msg = new ExecutionMessage();
-						msg.ExecutionType = ExecutionTypes.Tick;
-						msg.SecurityId = new SecurityId() { SecurityCode = code };
-						msg.TradePrice = (decimal)snap.Basic.AskPrice;
-						msg.TradeVolume = snap.Basic.Volume;
-						msg.ServerTime = Convert.ToDateTime(snap.Basic.UpdateTime);
-						msg.OriginSide = snap.Basic.IsInitialized ? Sides.Buy : Sides.Sell;
-						sendOutMessage(code,msg);
+						var tick = market.GetTicker(code);
+						foreach (var tk in tick.S2C.TickerListList) {
+							msg.ExecutionType = ExecutionTypes.Tick;
+							msg.TradePrice = (decimal)tk.Price;
+							msg.TradeVolume = tk.Volume;
+							msg.ServerTime = Convert.ToDateTime(tk.Time);
+							msg.OriginSide =tk.Dir==1 ? Sides.Buy : Sides.Sell;
+							sendOutMessage(code, msg);
+						}
 					}
-					if (datatype == DataType.OrderLog)
+					if (datatype == DataType.Level1)
 					{
-
+						var msg = new Level1ChangeMessage();
+						var qot = market.GetBasicQot(code).S2C.GetBasicQotList(0);
+						msg.TryAdd(Level1Fields.LastTradeTime, qot.UpdateTime);
+						msg.TryAdd(Level1Fields.LastTradePrice, (decimal)qot.LastClosePrice);
+						msg.TryAdd(Level1Fields.Volume, qot.Volume);
+						msg.TryAdd(Level1Fields.OpenPrice, (decimal)qot.OpenPrice);
+						msg.TryAdd(Level1Fields.LowPrice, (decimal)qot.LowPrice);
+						msg.TryAdd(Level1Fields.MaxPrice, (decimal)qot.HighPrice);
+						msg.TryAdd(Level1Fields.MinPrice, (decimal)qot.LowPrice);
+						sendOutMessage(code, msg);
 					}
 				}
 			}
@@ -62,6 +80,7 @@ namespace StockSharp.Futunn
 			var code = mdMsg.SecurityId.SecurityCode;
 			if (mdMsg.IsSubscribe)
 			{
+			
 				if (!securityList.ContainsKey(code))
 					securityList.Add(mdMsg.SecurityId.SecurityCode, mdMsg);
 				else
@@ -85,11 +104,13 @@ namespace StockSharp.Futunn
 		}
 
 		private void sendOutMessage(string code, Message message) {
-
+			if (securityList.ContainsKey(code))
+			{
+				var msg = securityList[code];
+				message.ReplaceSecurityId(msg.SecurityId);
+			}
 			SendOutMessage(message);
-			var msg = securityList[code];
-			SendSubscriptionResult(msg);
-			securityList.Remove(code);
+			
 		}
 
 		private void SubscribeMarketInfo() {
@@ -151,11 +172,6 @@ namespace StockSharp.Futunn
 					OpenPrice = (decimal)kline.OpenPrice,
 					LowPrice = (decimal)kline.LowPrice,
 					Volume = kline.Volume
-					//kline.LastClosePrice
-					//kline.Turnover 成交额
-					//kline.TurnoverRate 换手率
-					//kline.Pe 市盈率
-					//kline.ChangeRate 涨跌幅
 				});
 			}
 		}
@@ -168,11 +184,25 @@ namespace StockSharp.Futunn
 				{
 					SecurityId = new SecurityId() { SecurityCode = qot.Security.Code },
 				};
-				l1.Changes.Add(Level1Fields.Volume, qot.Volume);
-				l1.Changes.Add(Level1Fields.OpenPrice, qot.OpenPrice);
-				l1.Changes.Add(Level1Fields.LowPrice, qot.LowPrice);
-				l1.Changes.Add(Level1Fields.MaxPrice, qot.HighPrice);
-				l1.Changes.Add(Level1Fields.MinPrice, qot.LowPrice);
+				//secMsg.AddValue(nameof(Level1Fields.LastTradeId),);
+
+				//secMsg.AddValue(nameof(Level1Fields.LastTradeVolume),);
+				//secMsg.AddValue(nameof(Level1Fields.BestBidPrice), );
+				//secMsg.AddValue(nameof(Level1Fields.BidsVolume),);
+				//secMsg.AddValue(nameof(Level1Fields.BestAskPrice),);
+
+				//secMsg.AddValue(nameof(Level1Fields.OpenInterest), );
+
+				//secMsg.AddValue(nameof(Level1Fields.ImpliedVolatility), );
+				//secMsg.AddValue(nameof(Level1Fields.HistoricalVolatility), );
+
+				l1.TryAdd(Level1Fields.LastTradeTime, qot.UpdateTime);
+				l1.TryAdd(Level1Fields.LastTradePrice, (decimal)qot.LastClosePrice);
+				l1.TryAdd(Level1Fields.Volume, qot.Volume);
+				l1.TryAdd(Level1Fields.OpenPrice, (decimal)qot.OpenPrice);
+				l1.TryAdd(Level1Fields.LowPrice, (decimal)qot.LowPrice);
+				l1.TryAdd(Level1Fields.MaxPrice, (decimal)qot.HighPrice);
+				l1.TryAdd(Level1Fields.MinPrice, (decimal)qot.LowPrice);
 				SendOutMessage(l1);
 			}
         }
@@ -228,19 +258,7 @@ namespace StockSharp.Futunn
 			//secMsg.AddValue(nameof(Level1Fields.ClosePrice), );
 			//secMsg.AddValue(nameof(Level1Fields.Volume), );
 		}
-		private void ticks()
-		{
-			//SendOutMessage(new ExecutionMessage
-			//{
-			//	ExecutionType = ExecutionTypes.Tick,
-			//	SecurityId = new SecurityId() { SecurityCode = obj.S2C.Security.Code },
-			//	TradeId = ticker.Sequence,
-			//	TradePrice = (decimal)ticker.Price,
-			//	TradeVolume = ticker.Volume,
-			//	ServerTime = Convert.ToDateTime(ticker.Time),
-			//	OriginSide = ticker.Dir == 2 ? Sides.Buy : Sides.Sell,
-			//});
-		}
+		
 		protected override IEnumerable<TimeSpan> GetTimeFrames(SecurityId securityId, DateTimeOffset? from, DateTimeOffset? to)
 		{
 			return base.GetTimeFrames(securityId, from, to);

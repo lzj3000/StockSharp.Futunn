@@ -20,6 +20,7 @@ namespace StockSharp.Futunn.Native
             UserID = Convert.ToUInt64(userid);
             Password = CalcMD5(pass);
             MarketId = market;
+            connectSync();
         }
         private void connectSync()
         {
@@ -50,7 +51,6 @@ namespace StockSharp.Futunn.Native
         }
         public ulong GetAccList()
         {
-            connectSync();
             var list= this.GetAccListSync(Convert.ToUInt64(UserID));
             return list.S2C.GetAccList(0).AccID;
         }
@@ -63,7 +63,6 @@ namespace StockSharp.Futunn.Native
         }
         public void OrderRegister(string code, double qty, double price, int trdSide)
         {
-            connectSync();
             TrdUnlockTrade.Response unlockTradeRsp = UnlockTradeSync(Password, true);
             if (unlockTradeRsp.RetType != (int)Common.RetType.RetType_Succeed)
             {
@@ -127,7 +126,6 @@ namespace StockSharp.Futunn.Native
         /// <returns></returns>
         public TrdModifyOrder.Request OrderCancelSync(ulong orderId)
         {
-            connectSync();
             ReqInfo reqInfo = null;
             Object syncEvent = new Object();
 
@@ -156,14 +154,14 @@ namespace StockSharp.Futunn.Native
             }
         }
         public TrdGetPositionList.Response GetPositionList() {
-            connectSync();
+            ulong acc = GetAccList();
             TrdUnlockTrade.Response unlockTradeRsp = UnlockTradeSync(Password, true);
             if (unlockTradeRsp.RetType != (int)Common.RetType.RetType_Succeed)
             {
                 OnError(string.Format("unlockTradeSync err; retType={0} msg={1}\n", unlockTradeRsp.RetType, unlockTradeRsp.RetMsg));
             }
             TrdGetPositionList.Response response = this.GetPositionListSync(
-                 GetAccList(),
+               acc ,
                  (TrdCommon.TrdMarket)GetTrdMarket(),
                  ((TrdCommon.TrdEnv)GetTrdEnv()),
                  null,

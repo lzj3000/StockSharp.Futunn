@@ -75,7 +75,7 @@ namespace StockSharp.Futunn.Native
             }
             return rsp.S2C.SnapshotListList[0];
         }
-        public QotGetBasicQot.Request GetBasicQot(string code)
+        public QotGetBasicQot.Response GetBasicQot(string code)
         {
             connectSync();
             List<Security> secArr = new List<Security>();
@@ -107,10 +107,15 @@ namespace StockSharp.Futunn.Native
                     trdReqInfoMap.Add(seqNo, reqInfo);
                 }
                 Monitor.Wait(syncEvent);
-                return (QotGetBasicQot.Request)reqInfo.Rsp;
+                return (QotGetBasicQot.Response)reqInfo.Rsp;
             }
         }
-        public QotGetTicker.Request GetTicker(string code)
+        public QotGetOrderBook.Response GetOrderBook(string code,int deep) {
+            connectSync();
+            var sec = MakeSec(((QotMarket)MarketId), code);
+            return GetOrderBookSync(sec, deep);
+        }
+        public QotGetTicker.Response GetTicker(string code)
         {
             connectSync();
             List<Security> secArr = new List<Security>();
@@ -143,10 +148,47 @@ namespace StockSharp.Futunn.Native
                     trdReqInfoMap.Add(seqNo, reqInfo);
                 }
                 Monitor.Wait(syncEvent);
-                return (QotGetTicker.Request)reqInfo.Rsp;
+                return (QotGetTicker.Response)reqInfo.Rsp;
             }    
         }
-
+        public QotGetKL.Response GetKL(string code,int kltype)
+        {
+            connectSync();
+            List<Security> secArr = new List<Security>();
+            secArr.Add(MakeSec(((QotMarket)MarketId), code));
+            List<SubType> subTypes = new List<SubType>() {
+                    (SubType)kltype
+            };
+            QotSub.Response subRsp = SubSync(secArr, subTypes, true, false);
+            if (subRsp.RetType != (int)Common.RetType.RetType_Succeed)
+            {
+                OnError(string.Format("subSync err; retType={0} msg={1}\n", subRsp.RetType, subRsp.RetMsg));
+            }
+            ReqInfo reqInfo = null;
+            Object syncEvent = new Object();
+            lock (syncEvent)
+            {
+                lock (trdLock)
+                {
+                    QotCommon.Security sec = QotCommon.Security.CreateBuilder()
+                  .SetMarket(MarketId)
+                  .SetCode(code)
+                  .Build();
+                    QotGetKL.C2S c2s = QotGetKL.C2S.CreateBuilder()
+                            .SetSecurity(sec)
+                            .SetKlType(kltype)
+                            .SetRehabType((int)QotCommon.RehabType.RehabType_Forward)
+                            .SetReqNum(50)
+                            .Build();
+                    QotGetKL.Request req = QotGetKL.Request.CreateBuilder().SetC2S(c2s).Build();
+                    uint seqNo = qot.GetKL(req);
+                    reqInfo = new ReqInfo(ProtoID.TrdModifyOrder, syncEvent);
+                    trdReqInfoMap.Add(seqNo, reqInfo);
+                }
+                Monitor.Wait(syncEvent);
+                return (QotGetKL.Response)reqInfo.Rsp;
+            }
+        }
         public void SubAllInfo(string[] securities,bool isSub)
         {
             connectSync();
@@ -167,11 +209,7 @@ namespace StockSharp.Futunn.Native
                 OnError(string.Format("subSync err; retType={0} msg={1}\n", subRsp.RetType, subRsp.RetMsg));
             }
         }
-        public QotGetOrderBook.Response GetOrderBook(string securityCode)
-        {
-            connectSync();
-            return GetOrderBookSync(MakeSec(QotMarket.QotMarket_CNSH_Security, securityCode), 1);
-        }
+       
         public event Action<QotUpdateBasicQot.Response> BasicQotCallback;
         public event Action<QotUpdateOrderBook.Response> OrderBookCallback;
         public event Action<QotUpdateKL.Response> KLCallback;
