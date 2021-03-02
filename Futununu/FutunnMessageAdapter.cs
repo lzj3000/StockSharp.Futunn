@@ -136,6 +136,7 @@ namespace StockSharp.Futunn
                 _market = value;
             }
         }
+       
         Transaction transaction;
         private void onConnect()
         {

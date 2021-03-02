@@ -15,46 +15,45 @@ namespace StockSharp.Futunn
 		{
 			transaction.OrderStates += Transaction_OrderStates;
             transaction.OrderTradeFill += Transaction_OrderTradeFill;
+            transaction.Error += Transaction_Error;
 		}
 
-		private void Transaction_OrderStates(Futu.OpenApi.Pb.TrdUpdateOrder.Response obj)
+        private void Transaction_Error(Exception obj)
+        {
+			SendOutError(obj);
+        }
+
+        private void Transaction_OrderStates(Futu.OpenApi.Pb.TrdUpdateOrder.Response obj)
 		{
 			var order = obj.S2C.Order;
 			if (securityTradeList.ContainsKey(order.Code))
 			{
 				var reg = securityTradeList[order.Code];
-				var orderMsg = reg.ToExec();
-				orderMsg.OrderId = (long)order.OrderID;
-				orderMsg.OrderPrice = (decimal)order.Price;
-				orderMsg.OrderVolume = (decimal)order.Qty;
-				orderMsg.Side = ((TrdSide)order.TrdSide).Convert();
-				orderMsg.AveragePrice = (decimal)order.FillAvgPrice;
-				orderMsg.OrderState = OrderStates.Active;
-				orderMsg.ServerTime = Convert.ToDateTime(order.UpdateTimestamp);
-				SendOutMessage(orderMsg);
+				reg.Volume = (decimal)order.Qty;
+				reg.Price = (decimal)order.Price;
+				ProcessOrderStatus(reg, (long)order.OrderID, OrderStates.Active, Convert.ToDateTime(order.UpdateTimestamp));
 			}
 		}
 		private void Transaction_OrderTradeFill(Futu.OpenApi.Pb.TrdUpdateOrderFill.Response obj)
-		{
-			OrderStatusMessage osm = new OrderStatusMessage();
-			
+		{	
 			var order = obj.S2C.OrderFill;
-			
 			if (securityTradeList.ContainsKey(order.Code)) {
 				securityTradeList.Remove(order.Code);
 				var reg = securityTradeList[order.Code];
-				var orderMsg = reg.ToExec();
-				orderMsg.OrderState = OrderStates.Done;
-				orderMsg.OrderId = (long)order.OrderID;
-				orderMsg.OrderPrice = (decimal)order.Price;
-				orderMsg.OrderVolume = (decimal)order.Qty;
-				orderMsg.Side = ((TrdSide)order.TrdSide).Convert();
-				orderMsg.ServerTime = Convert.ToDateTime(order.UpdateTimestamp);
-				SendOutMessage(orderMsg);
+				reg.Volume = (decimal)order.Qty;
+				reg.Price = (decimal)order.Price;
+				ProcessOrderStatus(reg, (long)order.OrderID, OrderStates.Done, Convert.ToDateTime(order.UpdateTimestamp));
 			}
 		}
+		private void ProcessOrderStatus(OrderRegisterMessage message,long orderid, OrderStates state,DateTime updateTime)
+		{
+			var msg = message.ToExec();
+			msg.OrderState = state;
+			msg.OrderId = orderid;
+			msg.ServerTime = updateTime;
+			SendOutMessage(msg);
+		}
 		private readonly Dictionary<string, OrderRegisterMessage> securityTradeList = new Dictionary<string, OrderRegisterMessage>();
-		private readonly Dictionary<string, OrderStatusMessage> orderStatusList = new Dictionary<string, OrderStatusMessage>();
 		private void ProcessOrderRegister(OrderRegisterMessage regMsg)
 		{
 			var price = regMsg.Price;
@@ -84,17 +83,15 @@ namespace StockSharp.Futunn
 		{
 			if (cancelMsg.OrderId == null)
 				throw new InvalidOperationException(LocalizedStrings.Str2252Params.Put(cancelMsg.OriginalTransactionId));
-
 			var res = transaction.OrderCancelSync((ulong)cancelMsg.OrderId);
-			
-			ProcessOrderStatus(null);
+			if (securityTradeList.ContainsKey(cancelMsg.SecurityId.SecurityCode))
+			{
+				securityTradeList.Remove(cancelMsg.SecurityId.SecurityCode);
+			}
 		}
 
 
-		private void ProcessOrderStatus(OrderStatusMessage message)
-		{
-		    
-		}
+		
 		private void ProcessPortfolioLookup(PortfolioLookupMessage message)
 		{
 			if (message != null)

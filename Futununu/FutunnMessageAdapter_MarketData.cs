@@ -21,10 +21,8 @@ namespace StockSharp.Futunn
 
 		private void ProcessTime(Message message)
 		{
-			var list = market.GetSnapshots(subListTypes.Keys.ToArray());
-			foreach (var snap in list)
+			foreach (var code in subListTypes.Keys.ToArray())
 			{
-				var code = snap.Basic.Security.Code;
 				var dataTypes = subListTypes[code];
 				foreach (var datatype in dataTypes) {
 
@@ -40,8 +38,9 @@ namespace StockSharp.Futunn
 						foreach (var ask in books.S2C.OrderBookAskListList)
 							asks.Add(new QuoteChange((decimal)ask.Price, ask.Volume));
 						msg.Asks = asks.ToArray();
-						msg.ServerTime = Convert.ToDateTime(snap.Basic.UpdateTime);
-						sendOutMessage(code, msg);
+						msg.ServerTime = Convert.ToDateTime(books.S2C.SvrRecvTimeAsk);
+						
+						
 					}
 					if (datatype == DataType.Ticks)
 					{
@@ -112,7 +111,20 @@ namespace StockSharp.Futunn
 			SendOutMessage(message);
 			
 		}
+		private void OnSendOutMessage(Level1ChangeMessage message, DataType dataType)
+		{
+			if (dataType == DataType.MarketDepth) { 
+			    
+			}
+			if (dataType == DataType.Ticks)
+			{
 
+			}
+			if (dataType == DataType.CandleTimeFrame)
+			{
+
+			}
+		}
 		private void SubscribeMarketInfo() {
             market.BasicQotCallback += Market_BasicQotCallback;
 			market.OrderBookCallback += Market_OrderBookCallback;
@@ -239,32 +251,28 @@ namespace StockSharp.Futunn
 			}
 			SendSubscriptionResult(lookupMsg);
 		}
-		private void Level1() {
-			//secMsg.AddValue(nameof(Level1Fields.LastTradeTime),);
-			//secMsg.AddValue(nameof(Level1Fields.LastTradeId),);
-			//secMsg.AddValue(nameof(Level1Fields.LastTradePrice),);
-			//secMsg.AddValue(nameof(Level1Fields.LastTradeVolume),);
-			//secMsg.AddValue(nameof(Level1Fields.BestBidPrice), );
-			//secMsg.AddValue(nameof(Level1Fields.BidsVolume),);
-			//secMsg.AddValue(nameof(Level1Fields.BestAskPrice),);
-
-			//secMsg.AddValue(nameof(Level1Fields.OpenInterest), );
-
-			//secMsg.AddValue(nameof(Level1Fields.ImpliedVolatility), );
-			//secMsg.AddValue(nameof(Level1Fields.HistoricalVolatility), );
-			//secMsg.AddValue(nameof(Level1Fields.OpenPrice), );
-			//secMsg.AddValue(nameof(Level1Fields.HighPrice), );
-			//secMsg.AddValue(nameof(Level1Fields.LowPrice), );
-			//secMsg.AddValue(nameof(Level1Fields.ClosePrice), );
-			//secMsg.AddValue(nameof(Level1Fields.Volume), );
-		}
 		
 		protected override IEnumerable<TimeSpan> GetTimeFrames(SecurityId securityId, DateTimeOffset? from, DateTimeOffset? to)
 		{
-			return base.GetTimeFrames(securityId, from, to);
+			HashSet<TimeSpan> _timeFrames = new HashSet<TimeSpan>();
+			
+			_timeFrames.Add(TimeSpan.FromMinutes(1));
+			_timeFrames.Add(TimeSpan.FromMinutes(3));
+			_timeFrames.Add(TimeSpan.FromMinutes(5));
+			_timeFrames.Add(TimeSpan.FromMinutes(15));
+			_timeFrames.Add(TimeSpan.FromMinutes(30));
+			_timeFrames.Add(TimeSpan.FromMinutes(60));
+			_timeFrames.Add(TimeSpan.FromDays(1));
+			_timeFrames.Add(TimeSpan.FromDays(7));
+			_timeFrames.Add(TimeSpan.FromDays(30));
+			_timeFrames.Add(TimeSpan.FromDays(90));
+			_timeFrames.Add(TimeSpan.FromDays(365));
+			return _timeFrames;
 		}
 		public override IEnumerable<object> GetCandleArgs(Type candleType, SecurityId securityId, DateTimeOffset? from, DateTimeOffset? to)
 		{
+			TimeFrameCandleMessage tfcm = new TimeFrameCandleMessage();
+			
 			return base.GetCandleArgs(candleType, securityId, from, to);
 		}
 	}
