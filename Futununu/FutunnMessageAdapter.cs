@@ -91,12 +91,6 @@ namespace StockSharp.Futunn
                         ProcessSecurityLookup((SecurityLookupMessage)message);
                         break;
                     }
-                case MessageTypes.OrderStatus:
-                    {
-                        ProcessOrderStatus((OrderStatusMessage)message);
-                        break;
-                    }
-
                 case MessageTypes.OrderRegister:
                     {
                         ProcessOrderRegister((OrderRegisterMessage)message);
