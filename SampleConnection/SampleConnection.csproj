@@ -33,7 +33,7 @@
       <HintPath>lib\StockSharp.Logging.dll</HintPath>
     </Reference>
     <Reference Include="StockSharp.Media">
-      <HintPath>lib\StockSharp.Media.dll</HintPath>
+      <HintPath>..\..\StockSharp\Media\bin\Debug\netstandard2.0\StockSharp.Media.dll</HintPath>
     </Reference>
     <Reference Include="StockSharp.Messages">
       <HintPath>lib\StockSharp.Messages.dll</HintPath>

@@ -196,18 +196,7 @@ namespace StockSharp.Futunn
 				{
 					SecurityId = new SecurityId() { SecurityCode = qot.Security.Code },
 				};
-				//secMsg.AddValue(nameof(Level1Fields.LastTradeId),);
-
-				//secMsg.AddValue(nameof(Level1Fields.LastTradeVolume),);
-				//secMsg.AddValue(nameof(Level1Fields.BestBidPrice), );
-				//secMsg.AddValue(nameof(Level1Fields.BidsVolume),);
-				//secMsg.AddValue(nameof(Level1Fields.BestAskPrice),);
-
-				//secMsg.AddValue(nameof(Level1Fields.OpenInterest), );
-
-				//secMsg.AddValue(nameof(Level1Fields.ImpliedVolatility), );
-				//secMsg.AddValue(nameof(Level1Fields.HistoricalVolatility), );
-
+		
 				l1.TryAdd(Level1Fields.LastTradeTime, qot.UpdateTime);
 				l1.TryAdd(Level1Fields.LastTradePrice, (decimal)qot.LastClosePrice);
 				l1.TryAdd(Level1Fields.Volume, qot.Volume);
@@ -271,8 +260,6 @@ namespace StockSharp.Futunn
 		}
 		public override IEnumerable<object> GetCandleArgs(Type candleType, SecurityId securityId, DateTimeOffset? from, DateTimeOffset? to)
 		{
-			TimeFrameCandleMessage tfcm = new TimeFrameCandleMessage();
-			
 			return base.GetCandleArgs(candleType, securityId, from, to);
 		}
 	}
