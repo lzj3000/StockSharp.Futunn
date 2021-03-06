@@ -27,6 +27,7 @@ namespace StockSharp.Futunn
 		/// <param name="transactionIdGenerator">Transaction id generator.</param>
         public FutunnMessageAdapter(IdGenerator transactionIdGenerator) : base(transactionIdGenerator)
         {
+          
             HeartbeatInterval = DefaultHeartbeatInterval;
 
             this.AddMarketDataSupport();
@@ -91,12 +92,6 @@ namespace StockSharp.Futunn
                         ProcessSecurityLookup((SecurityLookupMessage)message);
                         break;
                     }
-                case MessageTypes.OrderStatus:
-                    {
-                        ProcessOrderStatus((OrderStatusMessage)message);
-                        break;
-                    }
-
                 case MessageTypes.OrderRegister:
                     {
                         ProcessOrderRegister((OrderRegisterMessage)message);

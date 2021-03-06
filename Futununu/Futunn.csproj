@@ -17,51 +17,41 @@
     <Compile Remove="Futununu_Test\**" />
     <EmbeddedResource Remove="Futununu_Test\**" />
     <None Remove="Futununu_Test\**" />
+    <None Remove="lib\x64\FTAPIChannel.dll" />
+    <None Remove="lib\x86\FTAPIChannel.dll" />
     <None Remove="localized\futunn_logo.png" />
     <None Remove="logos\futunn.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="lib\win32-x86\FTAPIChannel.dll" />
     <None Remove="logos\futunn_logo.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="lib\x64\FTAPIChannel.dll" />
+    <EmbeddedResource Include="lib\x86\FTAPIChannel.dll" />
     <EmbeddedResource Include="logos\futunn_logo.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="FTAPI4Net">
       <HintPath>..\..\..\..\..\..\Downloads\FTAPI-5.0.1310\FTAPI-5.0.1310\FTAPI4NET\Sample\bin\Debug\FTAPI4Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.ProtocolBuffers">
-      <HintPath>lib\netcore2.1\Google.ProtocolBuffers.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.ProtocolBuffers.Serialization">
-      <HintPath>lib\netcore2.1\Google.ProtocolBuffers.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="StockSharp.Messages">
-      <HintPath>lib\StockSharp.Messages.dll</HintPath>
-    </Reference>
-    <Reference Include="StockSharp.Logging">
-      <HintPath>lib\StockSharp.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="StockSharp.Localization">
-      <HintPath>lib\StockSharp.Localization.dll</HintPath>
+      <Private>false</Private>
+      <EmbedInteropTypes>false</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="lib\win32-x86\FTAPIChannel.dll">
+    <Resource Include="lib\x86\FTAPIChannel.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ecng.Common" Version="1.0.42" />
-    <PackageReference Include="Ecng.ComponentModel" Version="1.0.47" />
-    <PackageReference Include="Ecng.Serialization" Version="1.0.46" />
-    <PackageReference Include="Ecng.Localization" Version="1.0.46" />
+    <PackageReference Include="Bosima.Google.ProtocolBuffers" Version="1.0.1" />
+    <PackageReference Include="Bosima.Google.ProtocolBuffers.Serialization" Version="1.0.1" />
+    <PackageReference Include="Ecng.Common" Version="1.0.44" />
+    <PackageReference Include="StockSharp.Messages" Version="5.0.66" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
