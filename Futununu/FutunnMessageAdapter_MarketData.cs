@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using static Futu.OpenApi.Pb.QotCommon;
-using StockSharp.Futunn.Native.mapping;
+using StockSharp.Futunn.Native.Mapping;
 using System.Threading;
 
 namespace StockSharp.Futunn

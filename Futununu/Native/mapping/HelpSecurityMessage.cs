@@ -4,10 +4,18 @@ using System.Collections.Generic;
 using System.Text;
 using static Futu.OpenApi.Pb.QotCommon;
 
-namespace StockSharp.Futunn.Native.mapping
+namespace StockSharp.Futunn.Native.Mapping
 {
-   public static class HelpSecurityMessage
+    /// <summary>
+    /// Help for SecurityMessage
+    /// </summary>
+    public static class HelpSecurityMessage
     {
+        /// <summary>
+        /// Convert from SecurityStaticInfo to SecurityMessage
+        /// </summary>
+        /// <param name="info">SecurityStaticInfo</param>
+        /// <returns></returns>
         public static SecurityMessage Convert(this SecurityStaticInfo info)
         {
             return new SecurityMessage()

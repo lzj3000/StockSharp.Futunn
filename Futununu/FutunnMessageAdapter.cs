@@ -1,6 +1,5 @@
 ﻿using Ecng.Common;
 using Futu.OpenApi;
-using StockSharp.Futunn.component;
 using StockSharp.Futunn.Native;
 using StockSharp.Messages;
 using System;
@@ -12,7 +11,6 @@ namespace StockSharp.Futunn
     /// <summary>
     /// Futu证券消息适配器,用于交易中国市场股票
     /// </summary>
-    /// <include file='FTAPIChannel.dll' path='[@name=""]'/>
     /// <remarks></remarks>
     [OrderCondition(typeof(FutunnOrderCondition))]
     public partial class FutunnMessageAdapter : MessageAdapter

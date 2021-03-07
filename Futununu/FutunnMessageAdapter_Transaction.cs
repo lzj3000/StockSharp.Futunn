@@ -1,5 +1,5 @@
 ﻿using Ecng.Common;
-using StockSharp.Futunn.Native.mapping;
+using StockSharp.Futunn.Native.Mapping;
 using StockSharp.Localization;
 using StockSharp.Messages;
 using System;

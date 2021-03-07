@@ -9,6 +9,9 @@ using static Futu.OpenApi.Pb.QotGetSecuritySnapshot;
 
 namespace StockSharp.Futunn.Native
 {
+    /// <summary>
+    /// MarketData
+    /// </summary>
     public class MarketData: FutuAPI
     {
         public MarketData(string ip, ushort port,int market)

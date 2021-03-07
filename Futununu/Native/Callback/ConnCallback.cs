@@ -9,10 +9,25 @@ using System.Text;
 
 namespace StockSharp.Futunn.Native
 {
+    /// <summary>
+    /// Connected Callback
+    /// </summary>
     public class ConnCallback : BaseLogReceiver, FTSPI_Conn
     {
+        /// <summary>
+        /// Connected
+        /// </summary>
         public event Action<bool,string> Connected;
+        /// <summary>
+        /// Disconnected
+        /// </summary>
         public event Action Disconnected;
+        /// <summary>
+        /// OnInitConnect
+        /// </summary>
+        /// <param name="client">connect client</param>
+        /// <param name="errCode">error code</param>
+        /// <param name="desc">if error true </param>
         public void OnInitConnect(FTAPI_Conn client, long errCode, string desc)
         {
             Console.WriteLine("InitConnected");
@@ -26,7 +41,11 @@ namespace StockSharp.Futunn.Native
                 Connected?.Invoke(false, desc);
             }
         }
-
+        /// <summary>
+        /// OnDisconnect
+        /// </summary>
+        /// <param name="client">connect client</param>
+        /// <param name="errCode">error code</param>
         public void OnDisconnect(FTAPI_Conn client, long errCode)
         {
             this.AddInfoLog(LocalizedStrings.Disconnecting);

@@ -5,11 +5,16 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace StockSharp.Futunn.component
+namespace StockSharp.Futunn
 {
+    /// <summary>
+    /// FutunnResources
+    /// </summary>
     public class FutunnResources
     {
-       
+        /// <summary>
+        /// load ftapi file resource for connector
+        /// </summary>
         public static void LoadFTAPI()
         {
             var type = Type.GetType("Futu.OpenApi.FTAPI");
@@ -24,6 +29,9 @@ namespace StockSharp.Futunn.component
             ReleaseFTAPIChannel();
             FTAPI.Init();
         }
+        /// <summary>
+        /// release FTAPIChannel.dll 
+        /// </summary>
         private static void ReleaseFTAPIChannel()
         {
             string filename = "FTAPIChannel.dll";
