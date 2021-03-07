@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Ecng.Interop.Windows" Version="1.0.48" />
+    <PackageReference Include="StockSharp.Algo" Version="5.0.68" />
     <PackageReference Include="StockSharp.Xaml" Version="5.0.67" />
     <PackageReference Include="StockSharp.Xaml.Charting" Version="5.0.66" />
   </ItemGroup>
@@ -17,9 +18,6 @@
     <ProjectReference Include="..\Futununu\Futunn.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="StockSharp.Algo">
-      <HintPath>lib\StockSharp.Algo.dll</HintPath>
-    </Reference>
     <Reference Include="StockSharp.BusinessEntities">
       <HintPath>lib\StockSharp.BusinessEntities.dll</HintPath>
     </Reference>

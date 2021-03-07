@@ -1,5 +1,6 @@
 ﻿using Ecng.Common;
 using Futu.OpenApi;
+using StockSharp.Futunn.component;
 using StockSharp.Futunn.Native;
 using StockSharp.Messages;
 using System;
@@ -27,7 +28,7 @@ namespace StockSharp.Futunn
 		/// <param name="transactionIdGenerator">Transaction id generator.</param>
         public FutunnMessageAdapter(IdGenerator transactionIdGenerator) : base(transactionIdGenerator)
         {
-          
+            FutunnResources.LoadFTAPI();
             HeartbeatInterval = DefaultHeartbeatInterval;
 
             this.AddMarketDataSupport();
@@ -45,7 +46,7 @@ namespace StockSharp.Futunn
             this.AddSupportedResultMessage(MessageTypes.SecurityLookup);
             this.AddSupportedResultMessage(MessageTypes.PortfolioLookup);
             this.AddSupportedResultMessage(MessageTypes.OrderStatus);
-            FTAPI.Init();
+
         }
         public override bool IsAllDownloadingSupported(DataType dataType)
          => dataType == DataType.Securities || base.IsAllDownloadingSupported(dataType);

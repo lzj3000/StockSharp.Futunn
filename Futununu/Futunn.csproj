@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -17,9 +17,9 @@
     <Compile Remove="Futununu_Test\**" />
     <EmbeddedResource Remove="Futununu_Test\**" />
     <None Remove="Futununu_Test\**" />
+    <None Remove="lib\FTAPI4Net.dll" />
     <None Remove="lib\x64\FTAPIChannel.dll" />
     <None Remove="lib\x86\FTAPIChannel.dll" />
-    <None Remove="localized\futunn_logo.png" />
     <None Remove="logos\futunn.png" />
   </ItemGroup>
 
@@ -28,17 +28,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="lib\FTAPI4Net.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="lib\x64\FTAPIChannel.dll" />
     <EmbeddedResource Include="lib\x86\FTAPIChannel.dll" />
     <EmbeddedResource Include="logos\futunn_logo.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="FTAPI4Net">
-      <HintPath>..\..\..\..\..\..\Downloads\FTAPI-5.0.1310\FTAPI-5.0.1310\FTAPI4NET\Sample\bin\Debug\FTAPI4Net.dll</HintPath>
-      <Private>false</Private>
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +52,11 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FTAPI4Net">
+      <HintPath>..\..\..\..\Downloads\FTAPI-5.0.1310\FTAPI-5.0.1310\FTAPI4NET\FTAPI4Net\bin\Debug\FTAPI4Net.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
